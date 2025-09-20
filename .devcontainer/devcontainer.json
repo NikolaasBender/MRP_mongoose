@@ -1,0 +1,18 @@
+{
+  "name": "Python Development",
+  "build": {
+    "dockerfile": "../Dockerfile"
+  },
+  "remoteUser": "vscode",
+  "settings": {
+    "python.linting.pylintEnabled": true,
+    "python.formatting.autopep8Enabled": true
+  },
+  "extensions": [
+    "ms-python.python",
+    "ms-python.vscode-pylance"
+  ],
+  "forwardPorts": [80],
+  "postCreateCommand": "pip install -r requirements.txt",
+  "shutdownAction": "removeContainer"
+}

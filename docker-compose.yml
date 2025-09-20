@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  python_app:
+    build:
+      context: .
+    volumes:
+      - .:/app
+    working_dir: /app
+    env_file:
+      - .env
+    command: /usr/local/bin/python main.py
