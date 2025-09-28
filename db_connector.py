@@ -1,6 +1,20 @@
 import sqlite3
 from sqlite3 import Error
 import os
+from dataclasses import dataclass
+
+@dataclass
+class Panel:
+    name: str
+    color: str
+    material: str
+    cut_file_path: str
+
+@dataclass
+class Bag:
+    bag_name: str
+    pannels: list
+    parts: list
 
 
 class MRPDatabase:
@@ -13,6 +27,24 @@ class MRPDatabase:
             print(f"Successfully connected to the database at {db_file_path}")
         except:
             raise ValueError("Cant connect to database")
+        
+
+    def create_inventory_min_max(self):
+        """Stores the mins and maxes of each item"""
+        cursor = self.conn.cursor()
+        sql = """
+        CREATE TABLE IF NOT EXISTS inventory_mm (
+            product_id INTEGER PRIMARY KEY,
+            item_name TEXT NOT NULL,
+            color TEXT NOT NULL,
+            min_quantity INT NOT NULL,
+            max_quantity INT NOT NULL
+        );
+        """
+        cursor.execute(sql)
+        self.conn.commit()
+        print("Table 'shipment' checked/created successfully.")
+
         
     def create_shipment_table(self):
         """Creates the 'shipment' table if it does not exist."""
@@ -58,6 +90,47 @@ class MRPDatabase:
         cursor.execute(sql)
         self.conn.commit()
         print("Table 'parts_to_make' checked/created successfully.")
+
+    def get_inventory_count(self, name: str, color: str) -> int:
+        """
+        Queries the inventory table for the total quantity of items matching both the item_name
+        and color by searching for both strings within the item_name.
+        """
+        # Use the SQL AND operator to combine both search conditions
+        sql = "SELECT SUM(quantity) FROM inventory WHERE item_name LIKE ? AND item_name LIKE ?"
+        
+        # Prepare the search terms with wildcards for both parameters
+        item_search_term = f"%{name}%"
+        color_search_term = f"%{color}%"
+        
+        # Execute the query with a tuple containing both search terms
+        cursor = self.conn.cursor()
+        cursor.execute(sql, (item_search_term, color_search_term))
+        
+        # Return the sum
+        result = cursor.fetchone()[0]
+        return result if result is not None else 0
+    
+    def get_min_items(self, name, color):
+        """
+        Queries the inventory_mm table to check for the numimum quantity that an
+        item should have at any given time.
+        """
+        # Use the SQL AND operator to combine both search conditions
+        sql = "SELECT min_quantity FROM inventory_mm WHERE item_name LIKE ? AND item_name LIKE ?"
+        
+        # Prepare the search terms with wildcards for both parameters
+        item_search_term = f"%{name}%"
+        color_search_term = f"%{color}%"
+        
+        # Execute the query with a tuple containing both search terms
+        cursor = self.conn.cursor()
+        cursor.execute(sql, (item_search_term, color_search_term))
+        
+        # Return the sum
+        result = cursor.fetchone()[0]
+        return result if result is not None else 0
+
 
     # --- Main Setup Function ---
 
