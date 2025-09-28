@@ -4,6 +4,8 @@ import pprint
 from datetime import datetime
 from dotenv import load_dotenv
 from pyactiveresource.connection import UnauthorizedAccess
+from db_connector import *
+from order_management import *
 
 # Load environment variables from .env file
 load_dotenv()
@@ -43,6 +45,7 @@ def get_shopify_orders():
 
         # Iterate through the orders and print key details
         for order in orders:
+            print(type(order))
             order_number = order.name
             created_at = datetime.fromisoformat(order.created_at.replace("Z", "+00:00"))
             customer_name = "N/A"
@@ -80,7 +83,7 @@ def get_shopify_orders():
     finally:
         # Always clear the session after use
         shopify.ShopifyResource.clear_session()
-
+    
 
 if __name__ == "__main__":
     get_shopify_orders()
