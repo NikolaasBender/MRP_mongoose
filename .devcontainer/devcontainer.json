@@ -10,9 +10,12 @@
   },
   "extensions": [
     "ms-python.python",
-    "ms-python.vscode-pylance"
+    "ms-python.vscode-pylance",
+    "github.copilot"
   ],
-  "forwardPorts": [80],
+  "runArgs": [
+    "--network=host"
+  ],
   "postCreateCommand": "pip install -r requirements.txt",
   "shutdownAction": "removeContainer"
 }
