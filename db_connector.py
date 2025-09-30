@@ -2,19 +2,8 @@ import sqlite3
 from sqlite3 import Error
 import os
 from dataclasses import dataclass
+import yaml
 
-@dataclass
-class Panel:
-    name: str
-    color: str
-    material: str
-    cut_file_path: str
-
-@dataclass
-class Bag:
-    bag_name: str
-    pannels: list
-    parts: list
 
 
 class MRPDatabase:
@@ -28,6 +17,19 @@ class MRPDatabase:
         except:
             raise ValueError("Cant connect to database")
         
+    def create_colors_table(self):
+        """Creates a lookup table for colors"""
+        cursor = self.conn.cursor()
+        sql = """
+        CREATE TABLE IF NOT EXISTS colors (
+            color_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            hex_code TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """
+        cursor.execute(sql)
+        self.conn.commit()
 
     def create_inventory_min_max(self):
         """Stores the mins and maxes of each item"""
@@ -44,7 +46,6 @@ class MRPDatabase:
         cursor.execute(sql)
         self.conn.commit()
         print("Table 'shipment' checked/created successfully.")
-
         
     def create_shipment_table(self):
         """Creates the 'shipment' table if it does not exist."""
@@ -131,9 +132,60 @@ class MRPDatabase:
         result = cursor.fetchone()[0]
         return result if result is not None else 0
 
+    def create_cut_list_table(self):
+        """Creates the 'cut_list' table if it does not exist."""
+        cursor = self.conn.cursor()
+        sql = """
+        CREATE TABLE IF NOT EXISTS cut_list (
+            cut_id INTEGER PRIMARY KEY,
+            part_name TEXT NOT NULL,
+            file_path TEXT NOT NULL,
+            color INT NOT NULL,
+            quantity INTEGER NOT NULL
+        """
+        cursor.execute(sql)
+        self.conn.commit()
+        print("Table 'cut_list' checked/created successfully.")
 
-    # --- Main Setup Function ---
+    def add_to_cut_list(self, part_name: str, file_path: str, color: str, quantity: int):
+        """
+        Either insert a new row into the cut_list table or update an existing row by adding to the quantity.
+        """
+        cursor = self.conn.cursor()
 
+        # look up the color int from the colors table by name -- if it does not exist, throw an error
+        sql_color_lookup = "SELECT color_id FROM colors WHERE name = ?"
+        cursor.execute(sql_color_lookup, (color,))
+        color_result = cursor.fetchone()
+        if not color_result:
+            raise ValueError(f"Color '{color}' not found in colors table. Please add it first.")
+        color = color_result[0]
+
+        # Check if the entry already exists
+        sql_check = "SELECT quantity FROM cut_list WHERE part_name = ? AND file_path = ? AND color = ?"
+        cursor.execute(sql_check, (part_name, file_path, color))
+        result = cursor.fetchone()
+        
+        if result:
+            # If it exists, update the quantity
+            new_quantity = result[0] + quantity
+            sql_update = "UPDATE cut_list SET quantity = ? WHERE part_name = ? AND file_path = ? AND color = ?"
+            cursor.execute(sql_update, (new_quantity, part_name, file_path, color))
+        else:
+            # If it does not exist, insert a new row
+            sql_insert = "INSERT INTO cut_list (part_name, file_path, color, quantity) VALUES (?, ?, ?, ?)"
+            cursor.execute(sql_insert, (part_name, file_path, color, quantity))
+        
+        self.conn.commit()
+    
+    def add_color(self, name: str, hex_code: str = None) -> int:
+        """Adds a new color to the colors table"""
+        cursor = self.conn.cursor()
+        sql = "INSERT INTO colors (name, hex_code) VALUES (?, ?)"
+        cursor.execute(sql, (name, hex_code))
+        self.conn.commit()
+        return cursor.lastrowid
+    
     def setup_database(self, db_file: str):
         """
         Creates a connection to the SQLite database file specified by db_file.
@@ -148,13 +200,14 @@ class MRPDatabase:
         conn = None
         try:
             # Step 1: Connect to the database. This creates the file if it doesn't exist.
-            conn = sqlite3.connect(db_file)
             print(f"Successfully connected to SQLite database: {db_file} (SQLite version: {sqlite3.version})")
 
             # Step 2: Call the table creation helper functions
             print("Checking/creating database schema for tasks, inventory, and parts_to_make...")
-            self.create_inventory_table(conn)
-            self.create_parts_to_make_table(conn)
+            self.create_colors_table()
+            self.create_inventory_table()
+            self.create_parts_to_make_table()
+            self.create_cut_list_table()
 
         except Error as e:
             # Handle any database errors
@@ -165,19 +218,49 @@ class MRPDatabase:
                 conn.close()
                 print("Database connection closed.")
 
+    def get_cut_list(self):
+        """
+        Retrieves the cut list from the database.
+        """
+        cursor = self.conn.cursor()
+        sql = "SELECT * FROM cut_list;"
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        # Convert to list of dictionaries for easier handling
+        columns = [column[0] for column in cursor.description]
+        cut_list = [dict(zip(columns, row)) for row in rows]
+        return cut_list
 
-# --- Example Usage ---
-if __name__ == '__main__':
-    # Define the name of your database file
-    db_name = "my_project_data.db"
-
-    db_man = MRPDatabase(db_name)
-
-    # Call the function to set up the database and table
-    db_man.setup_database()
-
-    print("-" * 30)
-
-    # Optional: Run the function again to demonstrate that the table is not recreated
-    print("Running setup_database again (should not error and tables won't be recreated):")
-    db_man.setup_database()
+    def remove_from_cut_list(self, cut_id: int, quantity: int = 1):
+        """
+        Removes an item from the cut list based on its ID and decrements the quantity.
+        If the quantity reaches zero, the item is deleted from the table.
+        
+        Args:
+            cut_id (int): The ID of the cut list item to modify
+            quantity (int): Amount to decrement (defaults to 1)
+        """
+        cursor = self.conn.cursor()
+        
+        # Check current quantity
+        sql_check = "SELECT quantity FROM cut_list WHERE cut_id = ?"
+        cursor.execute(sql_check, (cut_id,))
+        result = cursor.fetchone()
+        
+        if not result:
+            raise ValueError(f"No cut list item found with ID {cut_id}")
+        
+        current_quantity = result[0]
+        new_quantity = current_quantity - quantity
+        
+        if new_quantity <= 0:
+            # Delete the record if quantity would be zero or negative
+            sql_delete = "DELETE FROM cut_list WHERE cut_id = ?"
+            cursor.execute(sql_delete, (cut_id,))
+        else:
+            # Update with new quantity
+            sql_update = "UPDATE cut_list SET quantity = ? WHERE cut_id = ?"
+            cursor.execute(sql_update, (new_quantity, cut_id))
+        
+        self.conn.commit()
+        print(f"Cut list item with ID {cut_id} updated. New quantity: {new_quantity if new_quantity > 0 else 'Deleted'}")
