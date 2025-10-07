@@ -1,2 +1,19 @@
-.env
-.pyc
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python virtual environment
+venv/
+env/
+.env/
+
+# Coverage reports
+.coverage
+htmlcov/
+coverage.xml
+
+# Build and dist
+build/
+dist/
+*.egg-info/
