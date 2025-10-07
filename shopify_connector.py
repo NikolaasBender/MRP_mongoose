@@ -2,7 +2,9 @@ import shopify
 import os
 from datetime import datetime
 from pyactiveresource.connection import UnauthorizedAccess
-
+import yaml
+from types import SimpleNamespace
+from typing import List
 
 # --- SCRIPT LOGIC ---
 def get_shopify_orders(shop_url, api_version, access_token, api_key):
@@ -78,3 +80,67 @@ def pretty_print_orders(orders):
             print(f"      Price: ${item.price}")
         
         print("-" * 30)
+
+def save_orders_as_yaml(orders, output_dir: str = 'test_data'):
+    """
+    Save Shopify orders as YAML files for testing purposes.
+    
+    Args:
+        orders: List of Shopify order objects
+        output_dir: Directory to save the YAML files
+    """
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    for order in orders:
+        # Convert order to dictionary
+        order_dict = {
+            'id': order.id,
+            'name': order.name,
+            'created_at': order.created_at,
+            'line_items': []
+        }
+
+        # Extract line items
+        for item in order.line_items:
+            item_dict = {
+                'title': item['title'],
+                'quantity': item['quantity'],
+                'properties': []
+            }
+            
+            if hasattr(item, 'properties'):
+                for prop in item['properties']:
+                    item_dict['properties'].append({
+                        'name': prop.name,
+                        'value': prop.value
+                    })
+            
+            order_dict['line_items'].append(item_dict)
+
+        # Create filename with timestamp and order number
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"order_{order.name}_{timestamp}.yaml"
+        filepath = os.path.join(output_dir, filename)
+
+        # Save as YAML
+        with open(filepath, 'w') as f:
+            yaml.dump(order_dict, f, default_flow_style=False, sort_keys=False)
+
+def load_test_orders(yaml_path: str) -> List[SimpleNamespace]:
+    """
+    Load test orders from YAML files.
+    Returns objects that mimic Shopify order structure.
+    """
+    with open(yaml_path, 'r') as f:
+        data = yaml.safe_load(f)
+    
+    # Convert dictionary to object recursively
+    def dict_to_obj(d):
+        if isinstance(d, dict):
+            return SimpleNamespace(**{k: dict_to_obj(v) for k, v in d.items()})
+        elif isinstance(d, list):
+            return [dict_to_obj(x) for x in d]
+        return d
+
+    return dict_to_obj(data)

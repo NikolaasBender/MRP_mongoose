@@ -8,10 +8,10 @@ def sample_yaml_file():
     """Fixture to create a temporary YAML file for testing"""
     test_yaml = """
 bag:
-  namd: "Test Bag"
+  name: "Test Bag"
   fabric_panels:
-    - {name: "Front Panel", file_path: "front.dng"}
-    - {name: "Back Panel", file_path: "back.dng"}
+    - {name: "Front Panel", shop_map: "Main Color", file_path: "front.dng"}
+    - {name: "Bottom Panel", shop_map: "Accent 1", file_path: "bottom.dng"}
   zippers:
     - {pitch: 5, length: 30, color: "Black", name: "Main Zipper"}
   buckles:
@@ -31,8 +31,8 @@ bag:
 def sample_bag():
     """Fixture to create a sample bag instance"""
     panels = [
-        Panel(name="Front Panel", file_path="front.dng"),
-        Panel(name="Back Panel", file_path="back.dng")
+        Panel(name="Front Panel", shop_map="Main Color", file_path="front.dng"),
+        Panel(name="Back Panel", shop_map="Accent 1", file_path="back.dng")
     ]
     zippers = [
         Zipper(pitch=5, length=30, color="Black", name="Main Zipper")
