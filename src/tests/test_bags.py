@@ -48,7 +48,7 @@ def sample_bag():
 def test_bag_initialization(sample_bag):
     """Test if Bag object is initialized correctly"""
     assert sample_bag.name == "Test Bag"
-    assert len(sample_bag.panels) == 2
+    assert len(sample_bag.fabric_panels) == 2
     assert len(sample_bag.zippers) == 1
     assert len(sample_bag.buckles) == 1
     assert len(sample_bag.webbings) == 1
@@ -65,8 +65,8 @@ def test_from_yaml(sample_yaml_file):
     
     bag = bags[0]
     assert bag.name == "Test Bag"
-    assert len(bag.panels) == 2
-    assert bag.panels[0].file_path == "front.dng"
+    assert len(bag.fabric_panels) == 2
+    assert bag.fabric_panels[0].file_path == "front.dng"
     assert bag.zippers[0].color == "Black"
     assert bag.buckles[0].size == 3
     assert bag.webbings[0].width == 20

@@ -4,7 +4,7 @@
         {
             "label": "Run All Tests",
             "type": "shell",
-            "command": "python -m pytest tests/ -v --cov=. --cov-report=term-missing",
+            "command": "python -m pytest src/tests/ -v --cov=. --cov-report=term-missing",
             "group": {
                 "kind": "test",
                 "isDefault": true
@@ -18,7 +18,7 @@
         {
             "label": "Run Tests with HTML Coverage",
             "type": "shell",
-            "command": "python -m pytest tests/ -v --cov=. --cov-report=html && $BROWSER htmlcov/index.html",
+            "command": "python -m pytest src/tests/ -v --cov=. --cov-report=html && $BROWSER htmlcov/index.html",
             "group": "test",
             "presentation": {
                 "reveal": "always",

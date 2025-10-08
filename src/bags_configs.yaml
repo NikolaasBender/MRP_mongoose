@@ -1,3 +1,4 @@
+---
 bag:
   name: "Basket Boss"
   fabric_panels:
@@ -9,12 +10,14 @@ bag:
     - {size: 3, color: "Silver", name: "Side Buckle"}
   webbings:
     - {width: 20, length: 100, color: "Black", name: "Shoulder Strap"}
-
+---
 bag:
-  name: "Travel Pro"
+  name: "B.O.F.P"
   fabric_panels:
     - {name: "Back Panel", shop_map: "Main Color", file_path: "back_panel.dng"}
     - {name: "Side Panel", shop_map: "Accent 1", file_path: "side_panel.dng"}
+    - {name: "Top Panel", shop_map: "Accent 2", file_path: "top_panel.dng"}
+    - {name: "Interior", shop_map: "Interior", file_path: "interior.dng"}
   zippers:
     - {pitch: 7, length: 40, color: "Navy", name: "Main Zipper"}
     - {pitch: 5, length: 25, color: "Navy", name: "Laptop Zipper"}

@@ -2,12 +2,59 @@ import shopify
 import os
 from datetime import datetime
 from pyactiveresource.connection import UnauthorizedAccess
-import yaml
-from types import SimpleNamespace
-from typing import List
+import yaml 
+from dataclasses import dataclass
+from typing import List, Optional
+    
+
+def order_to_dict(order) -> dict:
+    """
+    Convert a Shopify order object to a dictionary for easier processing.
+    
+    Args:
+        order: A Shopify order object
+    
+    Returns:
+        dict: Order data in dictionary format with nested structures
+    """
+    # Base order information
+    order_dict = {
+        'id': getattr(order, 'id', None),
+        'name': getattr(order, 'name', ''),
+        'created_at': getattr(order, 'created_at', ''),
+        'total_price': getattr(order, 'total_price', 0.0),
+        'note': getattr(order, 'note', ''),
+        'customer': {
+            'name': getattr(order.customer, 'name', '') if hasattr(order, 'customer') else '',
+            'email': getattr(order.customer, 'email', '') if hasattr(order, 'customer') else ''
+        },
+        'line_items': []
+    }
+    
+    # Process line items
+    for item in getattr(order, 'line_items', []):
+        item_dict = {
+            'id': getattr(item, 'id', None),
+            'title': getattr(item, 'title', ''),
+            'quantity': getattr(item, 'quantity', 0),
+            'price': getattr(item, 'price', 0.0),
+            'properties': {}
+        }
+        
+        # Convert properties to a simple key-value dict
+        for prop in getattr(item, 'properties', []):
+            prop_name = getattr(prop, 'name', '')
+            prop_value = getattr(prop, 'value', '')
+            if prop_name:
+                item_dict['properties'][prop_name] = prop_value
+                
+        order_dict['line_items'].append(item_dict)
+    
+    return order_dict
+
 
 # --- SCRIPT LOGIC ---
-def get_shopify_orders(shop_url, api_version, access_token, api_key):
+def get_shopify_orders(shop_url, api_version, access_token, api_key) -> Optional[List[dict]]:
     """
     Connects to the Shopify API and fetches the latest unfulfilled orders.
     """
@@ -35,7 +82,7 @@ def get_shopify_orders(shop_url, api_version, access_token, api_key):
         print(f"Found {len(orders)} recent unfulfilled orders. Displaying details:")
         print("-" * 30)
 
-        found_orders = orders
+        found_orders = [order_to_dict(o) for o in orders]
 
     except UnauthorizedAccess as e:
         print(f"Authentication Error: {e}")
@@ -93,30 +140,7 @@ def save_orders_as_yaml(orders, output_dir: str = 'test_data'):
         os.makedirs(output_dir)
 
     for order in orders:
-        # Convert order to dictionary
-        order_dict = {
-            'id': order.id,
-            'name': order.name,
-            'created_at': order.created_at,
-            'line_items': []
-        }
-
-        # Extract line items
-        for item in order.line_items:
-            item_dict = {
-                'title': item['title'],
-                'quantity': item['quantity'],
-                'properties': []
-            }
-            
-            if hasattr(item, 'properties'):
-                for prop in item['properties']:
-                    item_dict['properties'].append({
-                        'name': prop.name,
-                        'value': prop.value
-                    })
-            
-            order_dict['line_items'].append(item_dict)
+        order_dict = order_to_dict(order)
 
         # Create filename with timestamp and order number
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -126,21 +150,3 @@ def save_orders_as_yaml(orders, output_dir: str = 'test_data'):
         # Save as YAML
         with open(filepath, 'w') as f:
             yaml.dump(order_dict, f, default_flow_style=False, sort_keys=False)
-
-def load_test_orders(yaml_path: str) -> List[SimpleNamespace]:
-    """
-    Load test orders from YAML files.
-    Returns objects that mimic Shopify order structure.
-    """
-    with open(yaml_path, 'r') as f:
-        data = yaml.safe_load(f)
-    
-    # Convert dictionary to object recursively
-    def dict_to_obj(d):
-        if isinstance(d, dict):
-            return SimpleNamespace(**{k: dict_to_obj(v) for k, v in d.items()})
-        elif isinstance(d, list):
-            return [dict_to_obj(x) for x in d]
-        return d
-
-    return dict_to_obj(data)
