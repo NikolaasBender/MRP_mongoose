@@ -1,2 +1,7 @@
 ShopifyAPI
 dotenv
+pytest
+pytest-cov
+pytest-mock
+flask
+pandas

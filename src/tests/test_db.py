@@ -86,8 +86,12 @@ def db_connection():
 
 def test_database_is_in_memory(db_connection):
     """Verify that the database is in memory and not a file on disk."""
-    # If the database is in memory, the database property will be ':memory:'
-    assert db_connection.database == ':memory:'
+    cursor = db_connection.cursor()
+    cursor.execute("PRAGMA database_list")
+    db_info = cursor.fetchall()
+    
+    # For in-memory databases, the file column (index 2) will be ''
+    assert db_info[0][2] == ''
 
 def test_shipment_table_creation(db_connection):
     """Test that the shipments table was correctly created by the fixture."""
