@@ -7,19 +7,25 @@ import yaml
 
 
 class MRPDatabase:
-    def __init__ (self, db_file_path: str):
+    def __init__ (self, db_file_path: str, colors_file_path: str = 'src/colors.yaml'):
         if not os.path.exists(db_file_path):
             print(f"I did not find a a database file at {db_file_path}\nCreating a new database file")
         self.conn = None
+        self.colors_file_path = colors_file_path
         try:
             self.conn = sqlite3.connect(db_file_path)
             print(f"Successfully connected to the database at {db_file_path}")
+            self.setup_database(db_file_path)
         except:
             raise ValueError("Cant connect to database")
         
     def create_colors_table(self):
         """Creates a lookup table for colors"""
         cursor = self.conn.cursor()
+        # Check if table exists before creation
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='colors'")
+        table_existed = cursor.fetchone() is not None
+
         sql = """
         CREATE TABLE IF NOT EXISTS colors (
             color_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,6 +36,32 @@ class MRPDatabase:
         """
         cursor.execute(sql)
         self.conn.commit()
+        print("Table 'colors' checked/created successfully.")
+        # load colors from yaml file
+        # Check if table exists after creation
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='colors'")
+        table_exists_now = cursor.fetchone() is not None
+        
+        # Determine if table was just created
+        was_created = not table_existed and table_exists_now
+        
+        if was_created:
+            print("Table 'colors' was created. Loading initial colors...")
+            # Load colors from yaml file only if table was just created
+            if os.path.exists(self.colors_file_path):
+                with open(self.colors_file_path, 'r') as f:
+                    colors = yaml.safe_load(f)
+                    for color in colors['colors']:
+                        try:
+                            _ = self.add_color(color['name'], color['hex'])
+                        except sqlite3.IntegrityError:
+                            pass
+                print(f"Loaded colors from {self.colors_file_path}")
+            else:
+                print(f"Colors file {self.colors_file_path} not found. No colors loaded.")
+        else:
+            print("Table 'colors' already existed.")
+    
 
     def create_inventory_min_max(self):
         """Stores the mins and maxes of each item"""
@@ -142,6 +174,7 @@ class MRPDatabase:
             file_path TEXT NOT NULL,
             color INT NOT NULL,
             quantity INTEGER NOT NULL
+        );
         """
         cursor.execute(sql)
         self.conn.commit()

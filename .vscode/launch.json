@@ -16,8 +16,23 @@
             "name": "debug the moose",
             "type": "debugpy",
             "request": "launch",
-            "program": "main.py",
+            "program": "src/main.py",
         },
+        {
+            "name": "Python: Debug with Exceptions",
+            "type": "python",
+            "request": "launch",
+            "program": "src/main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "breakOnSystemExitZero": false,
+            "exceptionBreakpointFilters": [
+                {
+                    "filter": "raised",
+                    "mode": "always"
+                }
+            ]
+        }
         {
             "name": "Python: Debug Tests",
             "type": "python",
