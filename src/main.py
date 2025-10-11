@@ -77,7 +77,6 @@ def run_flask_server():
     """
     print("-" * 40)
     print("Starting Flask web server in a separate process...")
-    print("Access the cut list at: http://127.0.0.1:5000/")
     print("-" * 40)
     # NOTE: Set use_reloader=False when running in a multi-process environment 
     # to prevent the reloader from accidentally starting new processes.

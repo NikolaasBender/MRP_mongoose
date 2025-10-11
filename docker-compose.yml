@@ -9,4 +9,4 @@ services:
     working_dir: /app
     env_file:
       - .env
-    command: /usr/local/bin/python main.py
+    command: /usr/local/bin/python src/main.py

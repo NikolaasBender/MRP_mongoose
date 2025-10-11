@@ -19,6 +19,8 @@ USER vscode
 
 # Make port 80 available to the world outside this container
 EXPOSE 80
+EXPOSE 5000
 
-# Run your python script
-CMD ["python", "main.py"]
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
