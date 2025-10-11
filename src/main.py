@@ -44,9 +44,16 @@ def parse_args():
 # =========================================================================
 # WEB SERVER LOGIC (Needs to be a standard function for multiprocessing)
 # =========================================================================
+# Initialize the Flask app outside the function
+# Get the absolute path to the directory containing main.py (which is 'src')
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construct the path to the 'templates' folder, which is one level up
+# e.g., /workspaces/bullmose/src/.. /templates/  ==> /workspaces/bullmose/templates/
+template_dir = os.path.join(base_dir, '..', 'templates')
 
 # Initialize the Flask app outside the function
-app = Flask(__name__)
+app = Flask(__name__, template_folder=template_dir)
 
 # NOTE: The database connection and logic remain the same, 
 # relying on the globally defined 'database' object (or the file 'inventory.db').
@@ -56,25 +63,11 @@ def index():
     Renders the index page showing the current aggregated cut list 
     by reading from the shared database file.
     """
+    colors = database.get_unique_colors()
     # Use the globally initialized database connection
-    cut_table = database.get_cut_list()
+    df = database.get_full_cut_list_dataframe()
     
-    panel_data = []
-    for row in cut_table:
-        part_name, file_path, color_id, quantity = row
-        color_name = database.get_color_name(color_id)
-        
-        panel_data.append({
-            'part_name': part_name,
-            'file_path': file_path,
-            'color': color_name,
-            'quantity': quantity
-        })
-    
-    # Convert to pandas DataFrame for easy manipulation and pass to template
-    df = pd.DataFrame(panel_data)
-    
-    return render_template('index.html', panels=df.to_dict('records'))
+    return render_template('index.html', panels=df.to_dict('records'), colors=colors)
 
 def run_flask_server():
     """

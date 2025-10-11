@@ -18,3 +18,7 @@ coverage.xml
 build/
 dist/
 *.egg-info/
+
+# SQLite database files
+*.db
+*.sqlite3

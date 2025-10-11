@@ -27,7 +27,6 @@ class OrderManager:
                 return bag
         raise Exception(f"Bag with name {name} not found")
 
-    
     def fuzzy_match_panel_name(self, name: str, properties: dict) -> str | None:
         """
         Finds the closest fuzzy match for 'name' within a list provided in 'properties'.
@@ -69,30 +68,31 @@ class OrderManager:
             # No match found above the cutoff threshold
             return None
 
-
     def add_order(self, order: dict):
         for item in order['line_items']:
-            if item['properties']:
-                # make properties a dictionary
-                props = item['properties']
-                # get color set property
-                if props['Color Set'] == "Custom":
-                    print("Custom order detected")
-                    # get item type
-                    title = item['title']
-                    # get bag data by name
-                    bag_data = self.get_bag_data_by_name(title)
-                    # match panels and colors to the properties
-                    for panel in bag_data.fabric_panels:
-                        requested_panel_color = props[self.fuzzy_match_panel_name(panel.shop_map, props)]
-                        # add this panel to the cut list
-                        self.database.add_to_cut_list(panel.name, panel.file_path, requested_panel_color, 1)
-                else: 
-                # ready to ship
-                    # put item through the system
-                    # self.the_system(item['title'], props["Color Set"], item['quantity'])
-                    print("Ready to ship order detected")
+            new_order = self.database.add_order(order['id'], order)
+            if new_order:
+                if item['properties']:
+                    # make properties a dictionary
+                    props = item['properties']
+                    # get color set property
+                    if props['Color Set'] == "Custom":
+                        print("Custom order detected")
+                        # get item type
+                        title = item['title']
+                        # get bag data by name
+                        bag_data = self.get_bag_data_by_name(title)
+                        # match panels and colors to the properties
+                        for panel in bag_data.fabric_panels:
+                            requested_panel_color = props[self.fuzzy_match_panel_name(panel.shop_map, props)]
+                            # add this panel to the cut list
+                            self.database.add_to_cut_list(panel.name, panel.file_path, requested_panel_color, 1)
+                    else: 
+                    # ready to ship
+                        # put item through the system
+                        # self.the_system(item['title'], props["Color Set"], item['quantity'])
+                        print("Ready to ship order detected")
 
-            else:
-                raise Exception("Item does not have properties")
+                else:
+                    raise Exception("Item does not have properties")
         

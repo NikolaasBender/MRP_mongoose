@@ -8,20 +8,35 @@
 <body>
     <div class="container mt-5">
         <h1>Panel Cutting List</h1>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="colorFilter" class="form-label">Filter by Color:</label>
+                <select id="colorFilter" class="form-select">
+                    <option value="">Show All Colors</option>
+                    {% for color in colors %}
+                        <option value="{{ color }}">{{ color }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
         <table id="panelTable" class="table table-striped">
             <thead>
                 <tr>
-                    <th>Bag Name</th>
-                    <th>Panel Name</th>
+                    <th>Part Name</th>
                     <th>File Path</th>
+                    <th>Color</th>
+                    <th>Quantity</th>
                 </tr>
             </thead>
             <tbody>
                 {% for panel in panels %}
                 <tr>
-                    <td>{{ panel.bag_name }}</td>
-                    <td>{{ panel.panel_name }}</td>
+                    <td>{{ panel.part_name }}</td>
                     <td>{{ panel.file_path }}</td>
+                    <td>{{ panel.color }}</td>
+                    <td>{{ panel.quantity }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -32,11 +47,40 @@
     <script src="https://cdn.jsdelivr.net/npm/datatables@1.10.18/media/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#panelTable').DataTable({
+            // Initialize DataTables and store it in a variable
+            var table = $('#panelTable').DataTable({
                 pageLength: 25,
                 order: [[0, 'asc']],
                 dom: 'Bfrtip',
+                // Define which column is the 'Color' column (it's the 3rd column, index 2)
+                columnDefs: [
+                    { targets: 2, name: 'Color' } 
+                ]
             });
+            
+            // --- 2. JAVASCRIPT FILTERING LOGIC ---
+            
+            // Get the color column index (0-based)
+            // Based on your table structure (Part Name=0, File Path=1, Color=2, Quantity=3), Color is index 2.
+            const colorColumnIndex = 2;
+
+            // Add an event listener to the color filter dropdown
+            $('#colorFilter').on('change', function() {
+                var colorValue = $(this).val();
+                
+                // Use the DataTables API to apply a filter (search) to a specific column
+                // .column(2) targets the Color column (index 2)
+                // .search() sets the filter value (the color name)
+                // .draw() updates the table display
+                
+                table
+                    .column(colorColumnIndex)
+                    .search(colorValue ? '^' + colorValue + '$' : '', true, false)
+                    .draw();
+            });
+            
+            // NOTE: The regex '^' + colorValue + '$' ensures an exact match for the color name,
+            // preventing a search for "Red" from matching "Red Panel".
         });
     </script>
 </body>
