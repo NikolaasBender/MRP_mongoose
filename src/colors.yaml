@@ -1,0 +1,21 @@
+colors:
+  - name: Red
+    hex: "#FF0000"
+  - name: Blue
+    hex: "#0000FF"
+  - name: Green
+    hex: "#00FF00"
+  - name: Black
+    hex: "#000000"
+  - name: White
+    hex: "#FFFFFF"
+  - name: Silver
+    hex: "#C0C0C0"
+  - name: Forest Green
+    hex: "#228B22"
+  - name: Cheetah
+    hex: "#C19A6B"
+  - name: Pink
+    hex: "#FFC0CB"
+  - name: Neon Yellow
+    hex: "#FFFF33"

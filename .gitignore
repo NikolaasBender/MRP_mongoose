@@ -1,1 +1,24 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python virtual environment
+venv/
+env/
+.env/
 .env
+
+# Coverage reports
+.coverage
+htmlcov/
+coverage.xml
+
+# Build and dist
+build/
+dist/
+*.egg-info/
+
+# SQLite database files
+*.db
+*.sqlite3
