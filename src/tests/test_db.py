@@ -2,6 +2,9 @@ import pytest
 import sqlite3
 from sqlite3 import Error
 from datetime import datetime
+from logger import setup_logger
+
+logger = setup_logger()
 
 # --- DATABASE SETUP HELPERS (REQUIRED FOR FIXTURE) ---
 
@@ -47,6 +50,7 @@ def create_shipments_table(conn: sqlite3.Connection):
 
 def insert_shipment(conn: sqlite3.Connection, product_name: str, shipment_date: str):
     """Inserts a new shipment record into the shipments table."""
+    logger.info(f"Inserting shipment: {product_name} on {shipment_date}")
     sql = 'INSERT INTO shipments(product_name, shipment_date) VALUES(?,?)'
     cursor = conn.cursor()
     cursor.execute(sql, (product_name, shipment_date))
@@ -68,7 +72,7 @@ def db_connection():
     
     The ':memory:' database is destroyed automatically when the connection is closed.
     """
-    print("\n[SETUP] Creating in-memory database.")
+    logger.info("\n[SETUP] Creating in-memory database.")
     # Use ':memory:' for an in-memory database that never touches the disk.
     conn = sqlite3.connect(":memory:") 
     
@@ -79,13 +83,14 @@ def db_connection():
     
     yield conn  # The test runs here, receiving the connection object.
     
-    print("[TEARDOWN] Closing in-memory database connection.")
+    logger.info("[TEARDOWN] Closing in-memory database connection.")
     conn.close()
 
 # --- PYTEST TEST CASES ---
 
 def test_database_is_in_memory(db_connection):
     """Verify that the database is in memory and not a file on disk."""
+    logger.info("Testing database is in memory...")
     cursor = db_connection.cursor()
     cursor.execute("PRAGMA database_list")
     db_info = cursor.fetchall()
@@ -95,6 +100,7 @@ def test_database_is_in_memory(db_connection):
 
 def test_shipment_table_creation(db_connection):
     """Test that the shipments table was correctly created by the fixture."""
+    logger.info("Testing shipment table creation...")
     cursor = db_connection.cursor()
     # Attempt to read from the table
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='shipments'")
@@ -104,6 +110,7 @@ def test_shipment_table_creation(db_connection):
 
 def test_insert_and_retrieve_shipment(db_connection):
     """Test the insertion and retrieval of a shipment record."""
+    logger.info("Testing insert and retrieve shipment...")
     product = "Super Widget Pro"
     date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
@@ -124,6 +131,7 @@ def test_insert_and_retrieve_shipment(db_connection):
 
 def test_initial_inventory_is_empty(db_connection):
     """Test that the inventory table starts with zero rows."""
+    logger.info("Testing initial inventory is empty...")
     cursor = db_connection.cursor()
     cursor.execute("SELECT COUNT(*) FROM inventory")
     count = cursor.fetchone()[0]

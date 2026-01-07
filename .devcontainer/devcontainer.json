@@ -1,9 +1,15 @@
 {
   "name": "Python Development",
   "build": {
-    "dockerfile": "../Dockerfile"
+    "dockerfile": "../Dockerfile",
+    "args": {
+      // Passes your actual UID/GID from your host shell to the Docker build
+      "USER_UID": "${localEnv:UID}",
+      "USER_GID": "${localEnv:GID}"
+    }
   },
   "remoteUser": "vscode",
+  "updateRemoteUserUID": true, // Ensure this is explicitly true
   "settings": {
     "python.linting.pylintEnabled": true,
     "python.formatting.autopep8Enabled": true
@@ -11,7 +17,6 @@
   "extensions": [
     "ms-python.python",
     "ms-python.vscode-pylance",
-    "github.copilot"
   ],
   "runArgs": [
     "--network=host"

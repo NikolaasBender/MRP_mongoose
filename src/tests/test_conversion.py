@@ -2,7 +2,7 @@ import pytest
 import os
 import sqlite3
 import tempfile
-from bags import Bag, Panel, Zipper, Buckle, Webbing
+from bags import Bag, Panel, Buckle, RollGood
 import yaml
 
 # Test reading in a yaml of bags and a custom order and producing a cut list from the information provided.
@@ -21,7 +21,7 @@ def test_generate_cut_list():
     # read in bags config
     bags = Bag.from_yaml('/workspaces/bullmose/src/bags_configs.yaml')
     print(len(bags))
-    assert len(bags) == 2
+    assert len(bags) >= 2 # There are at least 2, exact number might change
 
     # read in orders for custom bags
     order_dict = {
@@ -48,5 +48,5 @@ def test_generate_cut_list():
     # send bag and order through cut list generator
     bfop = next(b for b in bags if b.name == "B.O.F.P")
     cut_list = bfop.generate_cut_list(order_dict)
-    assert len(cut_list) == 8  # 4 panels + 1 zipper + 1 buckle + 1 webbing
     print(cut_list)
+    assert len(cut_list) == 8

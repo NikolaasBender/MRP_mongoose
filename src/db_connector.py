@@ -4,17 +4,20 @@ import os
 from dataclasses import dataclass
 import yaml
 import pandas as pd
+from logger import setup_logger
+
+logger = setup_logger()
 
 class MRPDatabase:
     def __init__ (self, db_file_path: str, colors_file_path: str = 'src/colors.yaml'):
         self.db_name = db_file_path
         if not os.path.exists(db_file_path):
-            print(f"I did not find a a database file at {db_file_path}\nCreating a new database file")
+            logger.info(f"I did not find a a database file at {db_file_path}. Creating a new database file")
         conn = None
         self.colors_file_path = colors_file_path
         try:
             conn = sqlite3.connect(db_file_path)
-            print(f"Successfully connected to the database at {db_file_path}")
+            logger.info(f"Successfully connected to the database at {db_file_path}")
             self.setup_database(db_file_path)
             conn.close()
         except:
@@ -34,21 +37,24 @@ class MRPDatabase:
         with self.get_connection() as conn:
             try:
                 # Step 1: Connect to the database. This creates the file if it doesn't exist.
-                print(f"Successfully connected to SQLite database: {db_file} (SQLite version: {sqlite3.version})")
+                logger.info(f"Successfully connected to SQLite database: {db_file} (SQLite version: {sqlite3.version})")
 
                 # Step 2: Call the table creation helper functions
-                print("Checking/creating database schema for tasks, inventory, and parts_to_make...")
+                logger.info("Checking/creating database schema for tasks, inventory, and parts_to_make...")
                 self.create_colors_table()
                 self.create_inventory_table()
                 self.create_parts_to_make_table()
                 self.create_cut_list_table()
                 self.create_orders_table()
+                self.create_shipment_table() # Added this line based on the instruction's intent
+                self.create_logs_table() # Added this line
+                self.update_schema()
 
             except Error as e:
                 # Handle any database errors
-                print(f"An error occurred during database setup: {e}")
+                logger.error(f"An error occurred during database setup: {e}")
             finally:
-                print("Database setup complete.")
+                logger.info("Database setup complete.")
 
     def get_connection(self):
         """Helper to create a fresh connection."""
@@ -74,7 +80,7 @@ class MRPDatabase:
             """
             cursor.execute(sql)
             conn.commit()
-            print("Table 'colors' checked/created successfully.")
+            logger.info("Table 'colors' checked/created successfully.")
             # load colors from yaml file
             # Check if table exists after creation
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='colors'")
@@ -84,7 +90,7 @@ class MRPDatabase:
             was_created = not table_existed and table_exists_now
             
             if was_created:
-                print("Table 'colors' was created. Loading initial colors...")
+                logger.info("Table 'colors' was created. Loading initial colors...")
                 # Load colors from yaml file only if table was just created
                 if os.path.exists(self.colors_file_path):
                     with open(self.colors_file_path, 'r') as f:
@@ -94,11 +100,11 @@ class MRPDatabase:
                                 _ = self.add_color(color['name'], color['hex'])
                             except sqlite3.IntegrityError:
                                 pass
-                    print(f"Loaded colors from {self.colors_file_path}")
+                    logger.info(f"Loaded colors from {self.colors_file_path}")
                 else:
-                    print(f"Colors file {self.colors_file_path} not found. No colors loaded.")
+                    logger.warning(f"Colors file {self.colors_file_path} not found. No colors loaded.")
             else:
-                print("Table 'colors' already existed.")
+                logger.info("Table 'colors' already existed.")
     
     def create_inventory_min_max(self):
         """Stores the mins and maxes of each item"""
@@ -115,7 +121,7 @@ class MRPDatabase:
             """
             cursor.execute(sql)
             conn.commit()
-            print("Table 'shipment' checked/created successfully.")
+            logger.info("Table 'inventory_mm' checked/created successfully.")
         
     def create_shipment_table(self):
         """Creates the 'shipment' table if it does not exist."""
@@ -131,7 +137,7 @@ class MRPDatabase:
             """
             cursor.execute(sql)
             conn.commit()
-            print("Table 'shipment' checked/created successfully.")
+            logger.info("Table 'shipment' checked/created successfully.")
 
     def create_inventory_table(self):
         """Creates the 'inventory' table if it does not exist."""
@@ -147,7 +153,7 @@ class MRPDatabase:
             """
             cursor.execute(sql)
             conn.commit()
-            print("Table 'inventory' checked/created successfully.")
+            logger.info("Table 'inventory' checked/created successfully.")
 
     def create_parts_to_make_table(self):
         """Creates the 'parts_to_make' table if it does not exist."""
@@ -163,7 +169,7 @@ class MRPDatabase:
             """
             cursor.execute(sql)
             conn.commit()
-            print("Table 'parts_to_make' checked/created successfully.")
+            logger.info("Table 'parts_to_make' checked/created successfully.")
 
     def create_cut_list_table(self):
         """Creates the 'cut_list' table if it does not exist."""
@@ -180,7 +186,7 @@ class MRPDatabase:
             """
             cursor.execute(sql)
             conn.commit()
-            print("Table 'cut_list' checked/created successfully.")
+            logger.info("Table 'cut_list' checked/created successfully.")
 
     def create_orders_table(self):
         """Creates the 'orders' table if it does not exist."""
@@ -194,7 +200,7 @@ class MRPDatabase:
             """
             cursor.execute(sql)
             conn.commit()
-            print("Table 'orders' checked/created successfully.")
+            logger.info("Table 'orders' checked/created successfully.")
 
     def add_order(self, order_id: int, order_data: dict):
         """Inserts a new order into the orders table.
@@ -205,15 +211,40 @@ class MRPDatabase:
             # Check if the order already exists
             cursor.execute("SELECT 1 FROM orders WHERE order_id = ?", (order_id,))
             if cursor.fetchone():
-                print(f"Order with ID {order_id} already exists. Skipping insert.")
+                logger.info(f"Order with ID {order_id} already exists. Skipping insert.")
                 return False  # Order already exists
             
             # Insert the new order
             sql = "INSERT INTO orders (order_id, order_data) VALUES (?, ?)"
             cursor.execute(sql, (order_id, yaml.dump(order_data)))
             conn.commit()
-            print(f"Order with ID {order_id} added successfully.")
+            logger.info(f"Order with ID {order_id} added successfully.")
             return True  # Order added successfully
+
+    def get_all_orders(self, limit: int = 100):
+        """
+        Retrieves all orders from the database, parsing the YAML data.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "SELECT order_id, order_data FROM orders ORDER BY order_id DESC LIMIT ?"
+            cursor.execute(sql, (limit,))
+            rows = cursor.fetchall()
+            
+            orders = []
+            for row in rows:
+                try:
+                    order_data = yaml.safe_load(row[1])
+                    # Ensure order_id is in the data dict if not already
+                    if 'id' not in order_data:
+                        order_data['id'] = row[0]
+                    orders.append(order_data)
+                except yaml.YAMLError as e:
+                    logger.error(f"Error parsing YAML for order {row[0]}: {e}")
+                    # Provide partial data if parsing fails
+                    orders.append({'id': row[0], 'name': 'Error Loading Data', 'error': str(e)})
+                    
+            return orders
 
     def get_inventory_count(self, name: str, color: str) -> int:
         """
@@ -284,7 +315,7 @@ class MRPDatabase:
                 cursor.execute(sql_update, (new_quantity, part_name, file_path, color))
             else:
                 # If it does not exist, insert a new row
-                sql_insert = "INSERT INTO cut_list (part_name, file_path, color, quantity) VALUES (?, ?, ?, ?)"
+                sql_insert = "INSERT INTO cut_list (part_name, file_path, color, quantity, status) VALUES (?, ?, ?, ?, 'pending')"
                 cursor.execute(sql_insert, (part_name, file_path, color, quantity))
             
             conn.commit()
@@ -297,6 +328,19 @@ class MRPDatabase:
             cursor.execute(sql, (name, hex_code))
             conn.commit()
             return cursor.lastrowid
+    
+    def get_color_name(self, color_id: int) -> str:
+        """
+        Retrieves the name of a color given its ID.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "SELECT name FROM colors WHERE color_id = ?"
+            cursor.execute(sql, (color_id,))
+            result = cursor.fetchone()
+            if result:
+                return result[0]
+            return "Unknown"
     
     def get_cut_list(self):
         """
@@ -311,6 +355,58 @@ class MRPDatabase:
             columns = [column[0] for column in cursor.description]
             cut_list = [dict(zip(columns, row)) for row in rows]
             return cut_list
+
+    def update_schema(self):
+        """
+        Checks for missing columns in existing tables and adds them if necessary.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # Check cut_list table for 'status' column
+            cursor.execute("PRAGMA table_info(cut_list)")
+            columns = [info[1] for info in cursor.fetchall()]
+            
+            if 'status' not in columns:
+                logger.info("Adding 'status' column to cut_list table...")
+                cursor.execute("ALTER TABLE cut_list ADD COLUMN status TEXT DEFAULT 'pending'")
+                conn.commit()
+            else:
+                logger.info("'status' column already exists in cut_list.")
+
+    def mark_cut_done(self, cut_id: int):
+        """
+        Updates the status of a cut list item to 'done'.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "UPDATE cut_list SET status = 'done' WHERE cut_id = ?"
+            cursor.execute(sql, (cut_id,))
+            conn.commit()
+            logger.info(f"Cut item {cut_id} marked as done.")
+
+    def delete_cut(self, cut_id: int):
+        """
+        Permanently deletes a cut list item.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "DELETE FROM cut_list WHERE cut_id = ?"
+            cursor.execute(sql, (cut_id,))
+            conn.commit()
+            logger.info(f"Cut item {cut_id} deleted.")
+
+    def undo_cut_done(self, cut_id: int):
+        """
+        Reverts the status of a cut list item to 'pending'.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "UPDATE cut_list SET status = 'pending' WHERE cut_id = ?"
+            cursor.execute(sql, (cut_id,))
+            conn.commit()
+            logger.info(f"Cut item {cut_id} marked as pending.")
+
 
     def remove_from_cut_list(self, cut_id: int, quantity: int = 1):
         """
@@ -345,7 +441,7 @@ class MRPDatabase:
                 cursor.execute(sql_update, (new_quantity, cut_id))
             
             conn.commit()
-            print(f"Cut list item with ID {cut_id} updated. New quantity: {new_quantity if new_quantity > 0 else 'Deleted'}")
+            logger.info(f"Cut list item with ID {cut_id} updated. New quantity: {new_quantity if new_quantity > 0 else 'Deleted'}")
 
     def get_full_cut_list_dataframe(self):
         sql_query = """
@@ -391,3 +487,58 @@ class MRPDatabase:
             # Ensure all colors are strings and handle potential nulls if necessary
             unique_colors = sorted(df['color'].unique().tolist())
             return unique_colors
+
+    def create_logs_table(self):
+        """Creates the 'logs' table if it does not exist."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = """
+            CREATE TABLE IF NOT EXISTS logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT,
+                level TEXT,
+                module TEXT,
+                message TEXT
+            );
+            """
+            cursor.execute(sql)
+            conn.commit()
+            logger.info("Table 'logs' checked/created successfully.")
+
+    def insert_log(self, timestamp: str, level: str, module: str, message: str):
+        """Inserts a new log record into the logs table."""
+        try:
+            # Use specific connection to avoid threading issues
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                sql = 'INSERT INTO logs(timestamp, level, module, message) VALUES(?,?,?,?)'
+                cursor.execute(sql, (timestamp, level, module, message))
+                conn.commit()
+        except Error as e:
+            # Fallback to console print if DB logging fails to avoid infinite recursion
+            print(f"Failed to insert log into DB: {e}")
+
+    def get_logs(self, limit: int = 100, level: str = None, module: str = None):
+        """Retrieves logs with optional filtering."""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                query = "SELECT * FROM logs WHERE 1=1"
+                params = []
+                
+                if level and level != 'ALL':
+                    query += " AND level = ?"
+                    params.append(level)
+                
+                if module and module != 'ALL':
+                    query += " AND module = ?"
+                    params.append(module)
+                    
+                query += " ORDER BY id DESC LIMIT ?"
+                params.append(limit)
+                
+                cursor.execute(query, tuple(params))
+                return cursor.fetchall()
+        except Error as e:
+            logger.error(f"Error retrieving logs: {e}")
+            return []

@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block title %}All Orders{% endblock %}
+
+{% block styles %}
+<style>
+    .items-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .items-list li {
+        margin-bottom: 4px;
+        font-size: 0.9em;
+    }
+
+    .item-qty {
+        font-weight: 600;
+        color: #718096;
+        margin-right: 5px;
+    }
+
+    .date {
+        color: #718096;
+        font-size: 0.9em;
+    }
+
+    .price {
+        font-weight: 600;
+        color: #2d3748;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="/" class="text-decoration-none mb-4 d-inline-block">← Back to Dashboard</a>
+<h1 class="mb-4">All Orders</h1>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>
+                    <strong>{{ order.name }}</strong><br>
+                    <span style="font-size: 0.8em; color: #a0aec0;">ID: {{ order.id }}</span>
+                </td>
+                <td class="date">{{ order.created_at }}</td>
+                <td>
+                    {{ order.customer.first_name }} {{ order.customer.last_name }}<br>
+                    <span style="font-size: 0.8em; color: #a0aec0;">{{ order.email }}</span>
+                </td>
+                <td>
+                    <ul class="items-list">
+                        {% for item in order.line_items %}
+                        <li>
+                            <span class="item-qty">{{ item.quantity }}x</span> {{ item.title }}
+                            <!-- Show properties if any exist -->
+                            {% if item.properties %}
+                            <br><span style="font-size: 0.8em; color: #718096; margin-left: 20px;">
+                                {% for prop in item.properties %}
+                                {{ prop.name }}: {{ prop.value }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </span>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td class="price">{{ order.total_price }} {{ order.currency }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" class="text-center py-5 text-muted">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,32 +1,32 @@
 from dataclasses import dataclass
 from typing import List
 import yaml
+from logger import setup_logger
+
+logger = setup_logger()
 
 @dataclass
 class Panel:
     name: str
     shop_map: str
     file_path: str
+    material_set: str = None
 
 @dataclass
-class Zipper:
-    pitch: int
-    length: int
-    color: str
-    name: str
-
-@dataclass
-class Buckle:
+class Hardware:
     size: int
     color: str
     name: str
 
 @dataclass
-class Webbing:
-    width: int
-    length: int
-    color: str
+class RollGood:
     name: str
+    shop_map: str
+    len: int
+    material_set: str
+    quantity: int = 1
+    material_id: str = None
+    web_attribute_id: str = None
 
 @dataclass
 class cutLineItem:
@@ -38,9 +38,8 @@ class cutLineItem:
 class Bag:
     name: str
     fabric_panels: List[Panel]
-    zippers: List[Zipper]
-    buckles: List[Buckle]
-    webbings: List[Webbing]
+    hardware: List[Hardware]
+    roll_goods: List[RollGood]
 
     def get_panel_files(self) -> List[str]:
         return [panel.file_path for panel in self.fabric_panels]
@@ -50,6 +49,13 @@ class Bag:
             if panel.shop_map == shop_map:
                 return panel
         raise ValueError(f"No panel found for shop map: {shop_map}")
+
+    @staticmethod
+    def _filter_args(cls, data):
+        """Helper to filter dictionary keys to match dataclass fields"""
+        # Get field names from the dataclass
+        field_names = {f for f in cls.__annotations__}
+        return {k: v for k, v in data.items() if k in field_names}
 
     @classmethod
     def from_yaml(cls, yaml_path: str) -> List['Bag']:
@@ -66,29 +72,27 @@ class Bag:
                         bag_data = doc['bag']
                         try:
                             # Convert components with more robust error handling
-                            panels = [Panel(**p) for p in bag_data.get('fabric_panels', [])]
-                            zippers = [Zipper(**z) for z in bag_data.get('zippers', [])]
-                            buckles = [Buckle(**b) for b in bag_data.get('buckles', [])]
-                            webbings = [Webbing(**w) for w in bag_data.get('webbings', [])]
+                            panels = [Panel(**cls._filter_args(Panel, p)) for p in bag_data.get('fabric_panels', [])]
+                            hardware = [Hardware(**cls._filter_args(Hardware, h)) for h in bag_data.get('hardware', [])]
+                            rolls = [RollGood(**cls._filter_args(RollGood, w)) for w in bag_data.get('roll_goods', [])]
                             
                             new_bag = cls(
                                 name=bag_data['name'],
                                 fabric_panels=panels,
-                                zippers=zippers,
-                                buckles=buckles,
-                                webbings=webbings
+                                hardware=hardware,
+                                roll_goods=rolls
                             )
                             bags.append(new_bag)
                         except Exception as e:
-                            print(f"Error creating bag object: {str(e)}")
+                            logger.error(f"Error creating bag object: {str(e)}")
                     else:
-                        print("Document is not a valid bag configuration")
+                        logger.warning("Document is not a valid bag configuration")
                 
-                print(f"\nTotal bags loaded: {len(bags)}")
+                logger.info(f"Total bags loaded: {len(bags)}")
                 return bags
                 
             except yaml.YAMLError as e:
-                print(f"Error parsing YAML: {str(e)}")
+                logger.error(f"Error parsing YAML: {str(e)}")
                 raise
         
     def generate_cut_list(self, order: dict) -> List[cutLineItem]:
@@ -120,33 +124,29 @@ class Bag:
                     color=color
                 ))
             
-            # Process webbings
-            for webbing in self.webbings:
-                color = properties.get('Strap Color', webbing.color)
-                for _ in range(quantity):
+            # Process webbings / roll goods
+            for webbing in self.roll_goods:
+                # Try to get color from properties using shop_map, fallback to material_set
+                color = properties.get(webbing.shop_map, webbing.material_set)
+                
+                total_qty = quantity * webbing.quantity
+                
+                for _ in range(total_qty):
                     cut_list.append(cutLineItem(
                         panel_name=webbing.name,
                         file_path='-',  # No file path for webbing
                         color=color
                     ))
             
-            # Process zippers
-            for zipper in self.zippers:
-                color = properties.get('Zipper Color', zipper.color)
-                for _ in range(quantity):
-                    cut_list.append(cutLineItem(
-                        panel_name=zipper.name,
-                        file_path='-',  # No file path for zippers
-                        color=color
-                    ))
+
             
-            # Process buckles
-            for buckle in self.buckles:
-                color = properties.get('Buckle Color', buckle.color)
+            # Process hardware
+            for hw in self.hardware:
+                color = properties.get('Hardware Color', hw.color)
                 for _ in range(quantity):
                     cut_list.append(cutLineItem(
-                        panel_name=buckle.name,
-                        file_path='-',  # No file path for buckles
+                        panel_name=hw.name,
+                        file_path='-',  # No file path for hardware
                         color=color
                     ))
         

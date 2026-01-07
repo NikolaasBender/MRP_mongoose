@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block title %}Application Logs{% endblock %}
+
+{% block styles %}
+<style>
+    .level-INFO {
+        color: #2b6cb0;
+        font-weight: 600;
+    }
+
+    .level-WARNING {
+        color: #c05621;
+        font-weight: 600;
+    }
+
+    .level-ERROR {
+        color: #c53030;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">System Logs</h1>
+
+<form class="row g-3 mb-4 p-3 bg-light rounded border" action="/logs" method="GET">
+    <div class="col-md-4">
+        <label for="module" class="form-label">Module:</label>
+        <select name="module" id="module" class="form-select">
+            <option value="ALL">All Modules</option>
+            <option value="main" {% if current_module=='main' %}selected{% endif %}>main</option>
+            <option value="shopify_connector" {% if current_module=='shopify_connector' %}selected{% endif %}>
+                shopify_connector</option>
+            <option value="db_connector" {% if current_module=='db_connector' %}selected{% endif %}>db_connector
+            </option>
+            <option value="bags" {% if current_module=='bags' %}selected{% endif %}>bags</option>
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label for="level" class="form-label">Level:</label>
+        <select name="level" id="level" class="form-select">
+            <option value="ALL">All Levels</option>
+            <option value="INFO" {% if current_level=='INFO' %}selected{% endif %}>INFO</option>
+            <option value="WARNING" {% if current_level=='WARNING' %}selected{% endif %}>WARNING</option>
+            <option value="ERROR" {% if current_level=='ERROR' %}selected{% endif %}>ERROR</option>
+        </select>
+    </div>
+
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary me-2">Filter Logs</button>
+        <a href="/" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-light">
+            <tr>
+                <th style="width: 180px;">Timestamp</th>
+                <th style="width: 100px;">Level</th>
+                <th style="width: 150px;">Module</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log[1] }}</td>
+                <td class="level-{{ log[2] }}">{{ log[2] }}</td>
+                <td><code>{{ log[3] }}</code></td>
+                <td>{{ log[4] }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="text-center py-5 text-muted">No logs found matching criteria.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

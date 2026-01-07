@@ -11,14 +11,18 @@ from shopify_connector import get_shopify_orders, pretty_print_orders, save_orde
 import argparse
 import multiprocessing 
 import time
+from logger import setup_logger
 
 # --- WEB SERVER IMPORTS ---
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for, request
 import pandas as pd
 # --------------------------
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Setup Logger
+logger = setup_logger()
 
 # --- IMPORTANT SETUP ---
 SHOP_URL = os.getenv("SHOPIFY_SHOP_URL")
@@ -66,18 +70,89 @@ def index():
     by reading from the shared database file.
     """
     colors = database.get_unique_colors()
-    # Use the globally initialized database connection
-    df = database.get_full_cut_list_dataframe()
+    cut_table = database.get_cut_list()
     
-    return render_template('index.html', panels=df.to_dict('records'), colors=colors)
+    panel_data = []
+    for row in cut_table:
+        status = row.get('status', 'pending')
+        if status != 'done':
+            color_name = database.get_color_name(row['color'])
+            panel_data.append({
+                'cut_id': row.get('cut_id'),
+                'part_name': row['part_name'],
+                'file_path': row['file_path'],
+                'color': color_name,
+                'quantity': row['quantity'],
+                'status': status
+            })
+
+    return render_template('index.html', panels=panel_data, colors=colors)
+
+@app.route('/mark_done/<int:cut_id>', methods=['POST'])
+def mark_done(cut_id):
+    database.mark_cut_done(cut_id)
+    return redirect(url_for('index'))
+
+@app.route('/delete/<int:cut_id>', methods=['POST'])
+def delete_item(cut_id):
+    database.delete_cut(cut_id)
+    return redirect(url_for('index'))
+
+@app.route('/view_done')
+def view_done():
+    colors = database.get_unique_colors()
+    cut_table = database.get_cut_list()
+    panel_data = []
+    for row in cut_table:
+        status = row.get('status', 'pending')
+        if status == 'done':
+            color_name = database.get_color_name(row['color'])
+            panel_data.append({
+                'cut_id': row.get('cut_id'),
+                'part_name': row['part_name'],
+                'file_path': row['file_path'],
+                'color': color_name,
+                'quantity': row['quantity'],
+                'status': status
+            })
+            
+    return render_template('index.html', panels=panel_data, colors=colors, view_mode='done')
+
+@app.route('/undo/<int:cut_id>', methods=['POST'])
+def undo_done(cut_id):
+    database.undo_cut_done(cut_id)
+    return redirect(url_for('view_done'))
+
+@app.route('/logs')
+def view_logs():
+    """
+    Renders the logs page.
+    """
+    module = request.args.get('module', 'ALL')
+    level = request.args.get('level', 'ALL')
+    
+    # Defaults
+    db_module = module if module != 'ALL' else None
+    db_level = level if level != 'ALL' else None
+    
+    logs = database.get_logs(limit=200, level=db_level, module=db_module)
+    
+    return render_template('logs.html', logs=logs, current_module=module, current_level=level)
+
+@app.route('/orders')
+def view_orders():
+    """
+    Renders the orders page.
+    """
+    orders = database.get_all_orders(limit=50) # Limit to 50 for now
+    return render_template('orders.html', orders=orders)
+
 
 def run_flask_server():
     """
     Function to start the Flask server, designed to be run in a separate process.
     """
-    print("-" * 40)
-    print("Starting Flask web server in a separate process...")
-    print("-" * 40)
+    logger.info("Starting Flask web server in a separate process...")
     # NOTE: Set use_reloader=False when running in a multi-process environment 
     # to prevent the reloader from accidentally starting new processes.
     app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False)
@@ -88,30 +163,29 @@ def run_order_processing():
     """
     while True:
         # 2. CONTINUE WITH ORDER PROCESSING IN THE MAIN PROCESS
-        print("Fetching orders from Shopify in the main process...")
+        logger.info("Fetching orders from Shopify in the main process...")
         
         # connect to shopify and get orders
         orders = get_shopify_orders(SHOP_URL, API_VERSION, ACCESS_TOKEN, API_KEY)
         
         if orders:
-            print(f"Successfully fetched {len(orders)} orders.")
+            logger.info(f"Successfully fetched {len(orders)} orders.")
             
             if args.save_orders:
                 save_orders_as_yaml(orders, args.output_dir)
-                print(f"Saved {len(orders)} orders to {args.output_dir}/")
+                logger.info(f"Saved {len(orders)} orders to {args.output_dir}/")
             else:
                 for order in orders:
                     try:
                         # This updates the database file, which the web server reads
                         order_manager.add_order(order)
-                        print(f"Processed order {order['name']}")
+                        logger.info(f"Processed order {order['name']}")
                     except Exception as e:
-                        print(f"Error processing order {order.get('name', 'UNKNOWN')}: {e}")
+                        logger.error(f"Error processing order {order.get('name', 'UNKNOWN')}: {e}")
 
-            print("-" * 40)
-            print("Order processing complete. The web server is still running.")
+            logger.info("Order processing cycle complete.")
         else:
-            print("No orders fetched or an error occurred during connection.")
+            logger.info("No orders fetched or an error occurred during connection.")
 
         time.sleep(QUERY_INTERVAL)  # Wait before fetching orders again
 
@@ -136,17 +210,17 @@ if __name__ == "__main__":
     # when the order fetching is done. You can use a loop or simply join 
     # the server process, though joining will stop the main process from exiting.
     # A simple way to keep it alive is to wait for the user to press Enter.
-    print("The server will continue to run in the background.")
+    logger.info("The server will continue to run in the background.")
     try:
         input("Press Enter to stop the server and exit the program...\n")
     except EOFError:
         # Handle case where input is piped (non-interactive session)
-        print("Exiting...")
+        logger.info("Exiting...")
     except KeyboardInterrupt:
-        print("\nStopping server...")
+        logger.info("Stopping server...")
     
     # 3. CLEANUP: Terminate the server process when the user is done
     server_process.terminate()
     order_process.terminate()
     server_process.join()
-    print("Server stopped. Program exit.")
+    logger.info("Server stopped. Program exit.")

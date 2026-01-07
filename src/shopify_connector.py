@@ -5,7 +5,9 @@ from pyactiveresource.connection import UnauthorizedAccess
 import yaml 
 from dataclasses import dataclass
 from typing import List, Optional
-    
+from logger import setup_logger
+
+logger = setup_logger()
 
 def order_to_dict(order) -> dict:
     """
@@ -59,7 +61,7 @@ def get_shopify_orders(shop_url, api_version, access_token, api_key) -> Optional
     Connects to the Shopify API and fetches the latest unfulfilled orders.
     """
     if not all([shop_url, api_version, api_key, access_token]):
-        print("Error: Please set all required environment variables in your .env file.")
+        logger.error("Error: Please set all required environment variables in your .env file.")
         return None
     
     found_orders = None
@@ -69,27 +71,25 @@ def get_shopify_orders(shop_url, api_version, access_token, api_key) -> Optional
         session = shopify.Session(shop_url, api_version, access_token)
         shopify.ShopifyResource.activate_session(session)
 
-        print("Successfully connected to Shopify API.")
-        print("-" * 30)
+        logger.info("Successfully connected to Shopify API.")
 
         # Fetch the latest 10 orders that are unfulfilled.
         orders = shopify.Order.find(fulfillment_status='unfulfilled', limit=10)
 
         if not orders:
-            print("No unfulfilled orders found.")
+            logger.info("No unfulfilled orders found.")
             return
 
-        print(f"Found {len(orders)} recent unfulfilled orders. Displaying details:")
-        print("-" * 30)
+        logger.info(f"Found {len(orders)} recent unfulfilled orders.")
 
         found_orders = [order_to_dict(o) for o in orders]
 
     except UnauthorizedAccess as e:
-        print(f"Authentication Error: {e}")
-        print("Please check your Shopify API key, access token, and shop URL in the .env file.")
-        print("The provided credentials are not valid.")
+        logger.error(f"Authentication Error: {e}")
+        logger.error("Please check your Shopify API key, access token, and shop URL in the .env file.")
+        logger.error("The provided credentials are not valid.")
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        logger.error(f"An unexpected error occurred: {e}")
     finally:
         # Always clear the session after use
         shopify.ShopifyResource.clear_session()

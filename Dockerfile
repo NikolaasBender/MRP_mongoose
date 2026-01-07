@@ -1,26 +1,35 @@
-# Use an official Python runtime as a parent image
-FROM python:3.10-alpine
+FROM python:3.10-slim
 
-# Arguments for user and group IDs, defaulting to 1000
 ARG USER_GID=1000
 ARG USER_UID=1000
 
-# Create a non-root user and group
-RUN addgroup -g ${USER_GID} vscode && adduser -u ${USER_UID} -G vscode -s /bin/sh -D vscode
+# 1. Install sudo (CRITICAL for Dev Containers to fix permissions dynamically)
+RUN apt-get update && apt-get install -y \
+    bash \
+    wget \
+    procps \
+    git \
+    curl \
+    sudo \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set the working directory in the container
+# 2. Create the user and add to sudoers (Passwordless sudo)
+RUN groupadd --gid ${USER_GID} vscode \
+    && useradd --uid ${USER_UID} --gid ${USER_GID} -m -s /bin/bash vscode \
+    && echo "vscode ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode \
+    && chmod 0440 /etc/sudoers.d/vscode
+
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . /app
+# 3. Use --chown to ensure the copied files belong to the user, not root
+COPY --chown=vscode:vscode . /app
 
-# Switch to the non-root user
 USER vscode
 
-# Make port 80 available to the world outside this container
 EXPOSE 80
 EXPOSE 5000
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# 4. PATH update is often needed for pip --user installs to work immediately
+ENV PATH="/home/vscode/.local/bin:${PATH}"
 
+RUN pip install --user --no-cache-dir -r requirements.txt
