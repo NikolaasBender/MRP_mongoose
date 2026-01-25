@@ -1,6 +1,8 @@
 ---
 bag:
   name: "Basket Boss"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main Color", "Accent 1"]
   fabric_panels:
     - {name: "Front Panel", shop_map: "Main Color", file_path: "front_panel.svg", material_set: "Default Fabric"}
     - {name: "Bottom Panel", shop_map: "Accent 1", file_path: "bottom_panel.svg", material_set: "Default Fabric"}
@@ -12,6 +14,8 @@ bag:
 ---
 bag:
   name: "B.O.F.P"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main Color", "Accent 1", "Accent 2", "Interior"]
   fabric_panels:
     - {name: "Back Panel", shop_map: "Main Color", file_path: "back_panel.svg", material_set: "Default Fabric"}
     - {name: "Side Panel", shop_map: "Accent 1", file_path: "side_panel.svg", material_set: "Default Fabric"}
@@ -26,6 +30,8 @@ bag:
 ---
 bag:
   name: "Sling Thing"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Left", "Right", "Top"]
   fabric_panels:
     - {name: "Left Panel", shop_map: "Left", file_path: "Sling_Thing_Left_B.svg", fabric_usage: "Lam_all" , material_set: "Default Fabric"}
     - {name: "Right Panel", shop_map: "Right", file_path: "Sling_Thing_Right_C.svg", fabric_usage: "Lam_heavy", material_set: "Default Fabric"}
@@ -33,6 +39,8 @@ bag:
 ---
 bag:
   name: "Triange Sling"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Left", "Center", "Right", "Top"]
   fabric_panels:
     - {name: "Left Panel", shop_map: "Left", file_path: "TRIANGLE_LEFT_B.svg", fabric_usage: Lam_heavy, material_set: "Default Fabric"}
     - {name: "Center Panel", shop_map: "Center", file_path: "TRIANGLE_CENTER_C.svg", fabric_usage: Lam_all, material_set: "Default Fabric"}
@@ -43,6 +51,8 @@ bag:
 ---
 bag:
   name: "City Slicker"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Outer", "Liner", "Zipper Accent"]
   fabric_panels: 
     - {name: "Main Outer", shop_map: "Outer", file_path: "", material_set: "Lam_heavy" }
     - {name: "Zip Outer", shop_map: "Outer", file_path: "", material_set: "Lam_heavy" }
@@ -58,6 +68,8 @@ bag:
 ---
 bag:
   name: "B.F.P. City"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -78,6 +90,8 @@ bag:
 ---
 bag:
   name: "Mini Sling"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -87,6 +101,8 @@ bag:
 ---
 bag:
   name: "Musette"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Stabilizer Top"]
   fabric_panels:
     - {name: "Stabilizer Top", shop_map: "Stabilizer Top", file_path: "placeholder.svg", material_set: "1/2in mil Nylon"}
   hardware:
@@ -96,6 +112,8 @@ bag:
 ---
 bag:
   name: "B.F.P. - MTB"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -105,6 +123,8 @@ bag:
 ---
 bag:
   name: "L.T.F.P"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -114,6 +134,8 @@ bag:
 ---
 bag:
   name: "Cafe Cruiser"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -123,6 +145,8 @@ bag:
 ---
 bag:
   name: "Bar Crawler"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -132,6 +156,8 @@ bag:
 ---
 bag:
   name: "Hydration Station"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -141,6 +167,8 @@ bag:
 ---
 bag:
   name: "Slicker Bag"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -150,6 +178,8 @@ bag:
 ---
 bag:
   name: "Slicker Pad"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -159,6 +189,8 @@ bag:
 ---
 bag:
   name: "U-Lock Pocket"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -168,6 +200,8 @@ bag:
 ---
 bag:
   name: "Day Tripper"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -177,6 +211,8 @@ bag:
 ---
 bag:
   name: "Weekender SM"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -186,6 +222,8 @@ bag:
 ---
 bag:
   name: "Weekender MD"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -195,6 +233,8 @@ bag:
 ---
 bag:
   name: "Weekender LG"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -204,6 +244,8 @@ bag:
 ---
 bag:
   name: "Basket Boss 137"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:
@@ -213,6 +255,8 @@ bag:
 ---
 bag:
   name: "Basket Boss 139"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
   fabric_panels:
     - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
   hardware:

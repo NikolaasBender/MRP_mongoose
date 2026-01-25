@@ -40,6 +40,8 @@ class Bag:
     fabric_panels: List[Panel]
     hardware: List[Hardware]
     roll_goods: List[RollGood]
+    color_order_map: List[str] = None
+    inventory_policy: dict = None
 
     def get_panel_files(self) -> List[str]:
         return [panel.file_path for panel in self.fabric_panels]
@@ -80,7 +82,9 @@ class Bag:
                                 name=bag_data['name'],
                                 fabric_panels=panels,
                                 hardware=hardware,
-                                roll_goods=rolls
+                                roll_goods=rolls,
+                                color_order_map=bag_data.get('color_order_map', []),
+                                inventory_policy=bag_data.get('inventory_policy', {})
                             )
                             bags.append(new_bag)
                         except Exception as e:
@@ -94,7 +98,30 @@ class Bag:
             except yaml.YAMLError as e:
                 logger.error(f"Error parsing YAML: {str(e)}")
                 raise
+    
+    def explode_standard_colors(self, color_string: str) -> dict:
+        """
+        Parses a Slash-delimited color string into a dictionary mapping shop_map keys to colors.
+        Uses self.color_order_map to determine the mapping.
+        """
+        if not self.color_order_map:
+            return {}
+
+        colors = [c.strip() for c in color_string.split('/')]
+        mapped_colors = {}
         
+        for i, key in enumerate(self.color_order_map):
+            if i < len(colors):
+                mapped_colors[key] = colors[i]
+            else:
+                # If we run out of colors, maybe use the last one? 
+                # Or leave it empty? Design doc implies exact mapping.
+                # Assuming fallback to last regular color or 'Default' if completely missing is risky.
+                # For now, let's just map what we have.
+                pass
+        
+        return mapped_colors
+
     def generate_cut_list(self, order: dict) -> List[cutLineItem]:
         """
         Generate a cut list based on the bag configuration and order details.
@@ -112,7 +139,12 @@ class Bag:
             if item['title'] != self.name:
                 continue  # Skip items that don't match this bag
             
-            properties = {prop['name']: prop['value'] for prop in item.get('properties', [])}
+            # Ensure properties is a dict
+            properties_raw = item.get('properties', {})
+            if isinstance(properties_raw, list):
+                properties = {prop['name']: prop['value'] for prop in properties_raw}
+            else:
+                properties = properties_raw            
             quantity = item.get('quantity', 1)
             
             # Process fabric panels

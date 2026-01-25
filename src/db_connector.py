@@ -44,6 +44,8 @@ class MRPDatabase:
                 self.create_colors_table()
                 self.create_inventory_table()
                 self.create_parts_to_make_table()
+                self.create_jobs_table()
+                self.create_finished_goods_table()
                 self.create_cut_list_table()
                 self.create_orders_table()
                 self.create_shipment_table() # Added this line based on the instruction's intent
@@ -171,22 +173,181 @@ class MRPDatabase:
             conn.commit()
             logger.info("Table 'parts_to_make' checked/created successfully.")
 
+    def create_jobs_table(self):
+        """Creates the 'jobs' table if it does not exist."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = """
+            CREATE TABLE IF NOT EXISTS jobs (
+                job_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                sku TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'pending', -- pending, cut, sewn, complete
+                batch_id TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            """
+            cursor.execute(sql)
+            conn.commit()
+            logger.info("Table 'jobs' checked/created successfully.")
+
+    def create_finished_goods_table(self):
+        """Creates the 'finished_goods' table if it does not exist."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = """
+            CREATE TABLE IF NOT EXISTS finished_goods (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                sku TEXT NOT NULL,
+                quantity INTEGER DEFAULT 0,
+                location TEXT
+            );
+            """
+            cursor.execute(sql)
+            conn.commit()
+            logger.info("Table 'finished_goods' checked/created successfully.")
+
+    def add_job(self, sku: str, batch_id: str = None) -> int:
+        """Adds a new job to the jobs table."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "INSERT INTO jobs (sku, batch_id, status) VALUES (?, ?, 'pending')"
+            cursor.execute(sql, (sku, batch_id))
+            conn.commit()
+            return cursor.lastrowid
+
+    def get_jobs(self, status: str = None):
+        """Retrieves jobs, optionally filtered by status."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            if status:
+                sql = "SELECT * FROM jobs WHERE status = ? ORDER BY created_at DESC"
+                cursor.execute(sql, (status,))
+            else:
+                sql = "SELECT * FROM jobs ORDER BY created_at DESC"
+                cursor.execute(sql)
+            
+            rows = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            jobs = [dict(zip(columns, row)) for row in rows]
+            return jobs
+
+    def update_job_status(self, job_id: int, status: str):
+        """Updates the status of a job."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "UPDATE jobs SET status = ? WHERE job_id = ?"
+            cursor.execute(sql, (status, job_id))
+            conn.commit()
+            logger.info(f"Job {job_id} status updated to {status}.")
+
+    def add_finished_goods(self, sku: str, quantity: int, location: str = 'Default'):
+        """Adds finished goods to inventory."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "INSERT INTO finished_goods (sku, quantity, location) VALUES (?, ?, ?)"
+            cursor.execute(sql, (sku, quantity, location))
+            conn.commit()
+            logger.info(f"Added {quantity} of {sku} to finished goods.")
+
+    def get_finished_goods_count(self, sku: str) -> int:
+        """Gets total quantity of a finished good sku."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "SELECT SUM(quantity) FROM finished_goods WHERE sku = ?"
+            cursor.execute(sql, (sku,))
+            result = cursor.fetchone()[0]
+            return result if result is not None else 0
+
+    def get_all_finished_goods(self):
+        """Retrieves all finished goods aggregated by SKU."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "SELECT sku, SUM(quantity) as quantity FROM finished_goods GROUP BY sku ORDER BY sku"
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            return [{'sku': row[0], 'quantity': row[1]} for row in rows]
+
+    def get_job(self, job_id: int):
+        """Retrieves a single job by ID."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "SELECT * FROM jobs WHERE job_id = ?"
+            cursor.execute(sql, (job_id,))
+            row = cursor.fetchone()
+            if row:
+                columns = [column[0] for column in cursor.description]
+                return dict(zip(columns, row))
+            return None
+
     def create_cut_list_table(self):
         """Creates the 'cut_list' table if it does not exist."""
         with self.get_connection() as conn:
             cursor = conn.cursor()
             sql = """
             CREATE TABLE IF NOT EXISTS cut_list (
-                cut_id INTEGER PRIMARY KEY,
-                part_name TEXT NOT NULL,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                panel_name TEXT NOT NULL,
                 file_path TEXT NOT NULL,
-                color INT NOT NULL,
-                quantity INTEGER NOT NULL
+                color TEXT NOT NULL,
+                quantity INTEGER DEFAULT 1,
+                status TEXT DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(panel_name, file_path, color, status)
             );
             """
             cursor.execute(sql)
             conn.commit()
             logger.info("Table 'cut_list' checked/created successfully.")
+
+    def add_cut_item(self, panel_name: str, file_path: str, color: str, quantity: int = 1):
+        """
+        Adds a cut item to the cut_list. 
+        If an identical pending item exists, increments the quantity.
+        """
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # Upsert logic: SQLite >= 3.24 supports ON CONFLICT DO UPDATE
+            # But let's be safe with basic logic: Check then Insert/Update
+            sql_check = "SELECT id, quantity FROM cut_list WHERE panel_name = ? AND file_path = ? AND color = ? AND status = 'pending'"
+            cursor.execute(sql_check, (panel_name, file_path, color))
+            result = cursor.fetchone()
+            
+            if result:
+                new_qty = result[1] + quantity
+                sql_update = "UPDATE cut_list SET quantity = ? WHERE id = ?"
+                cursor.execute(sql_update, (new_qty, result[0]))
+                logger.info(f"Updated cut item {panel_name} ({color}): {result[1]} -> {new_qty}")
+            else:
+                sql_insert = "INSERT INTO cut_list (panel_name, file_path, color, quantity) VALUES (?, ?, ?, ?)"
+                cursor.execute(sql_insert, (panel_name, file_path, color, quantity))
+                logger.info(f"Inserted new cut item {panel_name} ({color}) x{quantity}")
+            
+            conn.commit()
+
+    def get_cut_list(self, color: str = None):
+        """Retrieves pending cut items, optionally filtered by color."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            if color and color != 'ALL':
+                sql = "SELECT * FROM cut_list WHERE status = 'pending' AND color = ? ORDER BY panel_name, color"
+                cursor.execute(sql, (color,))
+            else:
+                sql = "SELECT * FROM cut_list WHERE status = 'pending' ORDER BY panel_name, color"
+                cursor.execute(sql)
+            
+            rows = cursor.fetchall()
+            columns = [column[0] for column in cursor.description]
+            return [dict(zip(columns, row)) for row in rows]
+
+    def get_pending_cut_colors(self):
+        """Retrieves a list of distinct colors from the pending cut list."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "SELECT DISTINCT color FROM cut_list WHERE status = 'pending' ORDER BY color"
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            return [row[0] for row in rows]
 
     def create_orders_table(self):
         """Creates the 'orders' table if it does not exist."""
@@ -288,37 +449,7 @@ class MRPDatabase:
             result = cursor.fetchone()[0]
             return result if result is not None else 0
 
-    def add_to_cut_list(self, part_name: str, file_path: str, color: str, quantity: int):
-        """
-        Either insert a new row into the cut_list table or update an existing row by adding to the quantity.
-        """
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
 
-            # look up the color int from the colors table by name -- if it does not exist, throw an error
-            sql_color_lookup = "SELECT color_id FROM colors WHERE name = ?"
-            cursor.execute(sql_color_lookup, (color,))
-            color_result = cursor.fetchone()
-            if not color_result:
-                raise ValueError(f"Color '{color}' not found in colors table. Please add it first.")
-            color = color_result[0]
-
-            # Check if the entry already exists
-            sql_check = "SELECT quantity FROM cut_list WHERE part_name = ? AND file_path = ? AND color = ?"
-            cursor.execute(sql_check, (part_name, file_path, color))
-            result = cursor.fetchone()
-            
-            if result:
-                # If it exists, update the quantity
-                new_quantity = result[0] + quantity
-                sql_update = "UPDATE cut_list SET quantity = ? WHERE part_name = ? AND file_path = ? AND color = ?"
-                cursor.execute(sql_update, (new_quantity, part_name, file_path, color))
-            else:
-                # If it does not exist, insert a new row
-                sql_insert = "INSERT INTO cut_list (part_name, file_path, color, quantity, status) VALUES (?, ?, ?, ?, 'pending')"
-                cursor.execute(sql_insert, (part_name, file_path, color, quantity))
-            
-            conn.commit()
     
     def add_color(self, name: str, hex_code: str = None) -> int:
         """Adds a new color to the colors table"""
@@ -342,19 +473,7 @@ class MRPDatabase:
                 return result[0]
             return "Unknown"
     
-    def get_cut_list(self):
-        """
-        Retrieves the cut list from the database.
-        """
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            sql = "SELECT * FROM cut_list;"
-            cursor.execute(sql)
-            rows = cursor.fetchall()
-            # Convert to list of dictionaries for easier handling
-            columns = [column[0] for column in cursor.description]
-            cut_list = [dict(zip(columns, row)) for row in rows]
-            return cut_list
+
 
     def update_schema(self):
         """
@@ -362,131 +481,12 @@ class MRPDatabase:
         """
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            
-            # Check cut_list table for 'status' column
-            cursor.execute("PRAGMA table_info(cut_list)")
-            columns = [info[1] for info in cursor.fetchall()]
-            
-            if 'status' not in columns:
-                logger.info("Adding 'status' column to cut_list table...")
-                cursor.execute("ALTER TABLE cut_list ADD COLUMN status TEXT DEFAULT 'pending'")
-                conn.commit()
-            else:
-                logger.info("'status' column already exists in cut_list.")
-
-    def mark_cut_done(self, cut_id: int):
-        """
-        Updates the status of a cut list item to 'done'.
-        """
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            sql = "UPDATE cut_list SET status = 'done' WHERE cut_id = ?"
-            cursor.execute(sql, (cut_id,))
-            conn.commit()
-            logger.info(f"Cut item {cut_id} marked as done.")
-
-    def delete_cut(self, cut_id: int):
-        """
-        Permanently deletes a cut list item.
-        """
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            sql = "DELETE FROM cut_list WHERE cut_id = ?"
-            cursor.execute(sql, (cut_id,))
-            conn.commit()
-            logger.info(f"Cut item {cut_id} deleted.")
-
-    def undo_cut_done(self, cut_id: int):
-        """
-        Reverts the status of a cut list item to 'pending'.
-        """
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            sql = "UPDATE cut_list SET status = 'pending' WHERE cut_id = ?"
-            cursor.execute(sql, (cut_id,))
-            conn.commit()
-            logger.info(f"Cut item {cut_id} marked as pending.")
+            # No updates needed currently
+            pass
 
 
-    def remove_from_cut_list(self, cut_id: int, quantity: int = 1):
-        """
-        Removes an item from the cut list based on its ID and decrements the quantity.
-        If the quantity reaches zero, the item is deleted from the table.
-        
-        Args:
-            cut_id (int): The ID of the cut list item to modify
-            quantity (int): Amount to decrement (defaults to 1)
-        """
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            
-            # Check current quantity
-            sql_check = "SELECT quantity FROM cut_list WHERE cut_id = ?"
-            cursor.execute(sql_check, (cut_id,))
-            result = cursor.fetchone()
-            
-            if not result:
-                raise ValueError(f"No cut list item found with ID {cut_id}")
-            
-            current_quantity = result[0]
-            new_quantity = current_quantity - quantity
-            
-            if new_quantity <= 0:
-                # Delete the record if quantity would be zero or negative
-                sql_delete = "DELETE FROM cut_list WHERE cut_id = ?"
-                cursor.execute(sql_delete, (cut_id,))
-            else:
-                # Update with new quantity
-                sql_update = "UPDATE cut_list SET quantity = ? WHERE cut_id = ?"
-                cursor.execute(sql_update, (new_quantity, cut_id))
-            
-            conn.commit()
-            logger.info(f"Cut list item with ID {cut_id} updated. New quantity: {new_quantity if new_quantity > 0 else 'Deleted'}")
 
-    def get_full_cut_list_dataframe(self):
-        sql_query = """
-        SELECT 
-            cl.part_name,
-            cl.file_path,
-            c.name AS color,  -- Using 'color' as the final column name
-            cl.quantity
-        FROM 
-            cut_list cl
-        INNER JOIN 
-            colors c
-        ON 
-            cl.color = c.color_id;
-        """
-        with self.get_connection() as conn:
-            # pandas.read_sql will execute this query and return the DataFrame
-            df = pd.read_sql(sql_query, conn)
-            return df
 
-    def get_unique_colors(self):
-        """
-        Retrieves a list of unique colors from the colors table.
-        """
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            sql_query = """
-                SELECT 
-                    cl.part_name,
-                    cl.file_path,
-                    c.name AS color,
-                    cl.quantity
-                FROM 
-                    cut_list cl
-                INNER JOIN 
-                    colors c
-                ON 
-                    cl.color = c.color_id;
-                """
-            df = pd.read_sql(sql_query, conn)
-            
-            # --- NEW: Get the list of unique colors for the filter ---
-            # Ensure all colors are strings and handle potential nulls if necessary
-            unique_colors = sorted(df['color'].unique().tolist())
-            return unique_colors
 
     def create_logs_table(self):
         """Creates the 'logs' table if it does not exist."""

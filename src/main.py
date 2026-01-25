@@ -65,63 +65,44 @@ app = Flask(__name__, template_folder=template_dir)
 # relying on the globally defined 'database' object (or the file 'inventory.db').
 @app.route('/')
 def index():
-    """
-    Renders the index page showing the current aggregated cut list 
-    by reading from the shared database file.
-    """
-    colors = database.get_unique_colors()
-    cut_table = database.get_cut_list()
+    return redirect(url_for('cutting'))
+
+@app.route('/cutting')
+def cutting():
+    # Get filter from query params
+    selected_color = request.args.get('color', 'ALL')
     
-    panel_data = []
-    for row in cut_table:
-        status = row.get('status', 'pending')
-        if status != 'done':
-            color_name = database.get_color_name(row['color'])
-            panel_data.append({
-                'cut_id': row.get('cut_id'),
-                'part_name': row['part_name'],
-                'file_path': row['file_path'],
-                'color': color_name,
-                'quantity': row['quantity'],
-                'status': status
-            })
+    # Fetch detailed cut list items (filtered)
+    cut_items = database.get_cut_list(color=selected_color)
+    
+    # Fetch available colors for the dropdown
+    available_colors = database.get_pending_cut_colors()
+    
+    return render_template('cutting.html', cut_items=cut_items, available_colors=available_colors, selected_color=selected_color)
 
-    return render_template('index.html', panels=panel_data, colors=colors)
+@app.route('/sewing')
+def sewing():
+    jobs = database.get_jobs(status='cut')
+    return render_template('sewing.html', jobs=jobs)
 
-@app.route('/mark_done/<int:cut_id>', methods=['POST'])
-def mark_done(cut_id):
-    database.mark_cut_done(cut_id)
-    return redirect(url_for('index'))
+@app.route('/inventory')
+def inventory():
+    finished_goods = database.get_all_finished_goods()
+    return render_template('inventory.html', goods=finished_goods)
 
-@app.route('/delete/<int:cut_id>', methods=['POST'])
-def delete_item(cut_id):
-    database.delete_cut(cut_id)
-    return redirect(url_for('index'))
+@app.route('/api/mark_cut/<int:job_id>', methods=['POST'])
+def mark_cut(job_id):
+    database.update_job_status(job_id, 'cut')
+    return redirect(url_for('cutting'))
 
-@app.route('/view_done')
-def view_done():
-    colors = database.get_unique_colors()
-    cut_table = database.get_cut_list()
-    panel_data = []
-    for row in cut_table:
-        status = row.get('status', 'pending')
-        if status == 'done':
-            color_name = database.get_color_name(row['color'])
-            panel_data.append({
-                'cut_id': row.get('cut_id'),
-                'part_name': row['part_name'],
-                'file_path': row['file_path'],
-                'color': color_name,
-                'quantity': row['quantity'],
-                'status': status
-            })
-            
-    return render_template('index.html', panels=panel_data, colors=colors, view_mode='done')
-
-@app.route('/undo/<int:cut_id>', methods=['POST'])
-def undo_done(cut_id):
-    database.undo_cut_done(cut_id)
-    return redirect(url_for('view_done'))
+@app.route('/api/mark_sewn/<int:job_id>', methods=['POST'])
+def mark_sewn(job_id):
+    job = database.get_job(job_id)
+    if job:
+        database.update_job_status(job_id, 'complete')
+        # Add to inventory upon completion
+        database.add_finished_goods(job['sku'], 1, location="Production")
+    return redirect(url_for('sewing'))
 
 @app.route('/logs')
 def view_logs():
