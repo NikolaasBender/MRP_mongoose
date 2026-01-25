@@ -1,0 +1,528 @@
+nohup: ignoring input
+[2026-01-25 21:23:33,692] INFO in bags: Total bags loaded: 22
+[2026-01-25 21:23:33,696] INFO in db_connector: Successfully connected to the database at inventory.db
+[2026-01-25 21:23:33,699] INFO in db_connector: Successfully connected to SQLite database: inventory.db (SQLite version: 2.6.0)
+[2026-01-25 21:23:33,701] INFO in db_connector: Checking/creating database schema for tasks, inventory, and parts_to_make...
+[2026-01-25 21:23:33,704] INFO in db_connector: Table 'colors' checked/created successfully.
+[2026-01-25 21:23:33,707] INFO in db_connector: Table 'colors' already existed.
+[2026-01-25 21:23:33,709] INFO in db_connector: Table 'inventory' checked/created successfully.
+[2026-01-25 21:23:33,712] INFO in db_connector: Table 'parts_to_make' checked/created successfully.
+[2026-01-25 21:23:33,716] INFO in db_connector: Table 'jobs' checked/created successfully.
+[2026-01-25 21:23:33,719] INFO in db_connector: Table 'finished_goods' checked/created successfully.
+[2026-01-25 21:23:33,722] INFO in db_connector: Table 'cut_list' checked/created successfully.
+[2026-01-25 21:23:33,724] INFO in db_connector: Table 'orders' checked/created successfully.
+[2026-01-25 21:23:33,727] INFO in db_connector: Table 'shipment' checked/created successfully.
+[2026-01-25 21:23:33,730] INFO in db_connector: Table 'logs' checked/created successfully.
+[2026-01-25 21:23:33,733] INFO in db_connector: Database setup complete.
+[2026-01-25 21:23:33,744] INFO in main: Starting Flask web server in a separate process...
+[2026-01-25 21:23:33,746] INFO in main: Fetching orders from Shopify in the main process...
+ * Serving Flask app 'main'
+ * Debug mode: on
+[2026-01-25 21:23:33,752] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:23:33,755] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:23:33,769] INFO in _internal: [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.58:5000
+[2026-01-25 21:23:33,772] INFO in _internal: [33mPress CTRL+C to quit[0m
+[2026-01-25 21:23:34,002] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:23:34,019] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:23:34,022] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:23:34,025] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:23:34,028] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:23:34,031] INFO in main: Processed order #1322
+[2026-01-25 21:23:34,034] INFO in main: Order processing cycle complete.
+[2026-01-25 21:23:39,041] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:23:39,049] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:23:39,052] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:23:39,315] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:23:39,328] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:23:39,330] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:23:39,335] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:23:39,337] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:23:39,340] INFO in main: Processed order #1322
+[2026-01-25 21:23:39,342] INFO in main: Order processing cycle complete.
+[2026-01-25 21:23:44,350] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:23:44,357] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:23:44,361] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:23:44,714] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:23:44,729] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:23:44,732] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:23:44,734] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:23:44,737] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:23:44,740] INFO in main: Processed order #1322
+[2026-01-25 21:23:44,742] INFO in main: Order processing cycle complete.
+[2026-01-25 21:23:47,271] INFO in main: Successfully added new bag: Test Bag Curl
+[2026-01-25 21:23:47,349] INFO in bags: Total bags loaded: 23
+[2026-01-25 21:23:47,354] INFO in _internal: 127.0.0.1 - - [25/Jan/2026 21:23:47] "[32mPOST /add_bag HTTP/1.1[0m" 302 -
+[2026-01-25 21:23:47,368] INFO in _internal: 127.0.0.1 - - [25/Jan/2026 21:23:47] "GET /cutting HTTP/1.1" 200 -
+[2026-01-25 21:23:49,750] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:23:49,753] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:23:49,756] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:23:49,994] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:23:50,010] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:23:50,013] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:23:50,016] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:23:50,019] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:23:50,021] INFO in main: Processed order #1322
+[2026-01-25 21:23:50,024] INFO in main: Order processing cycle complete.
+[2026-01-25 21:23:55,032] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:23:55,040] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:23:55,043] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:23:55,364] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:23:55,379] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:23:55,382] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:23:55,385] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:23:55,388] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:23:55,391] INFO in main: Processed order #1322
+[2026-01-25 21:23:55,394] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:00,401] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:00,409] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:00,413] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:00,689] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:00,704] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:00,707] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:00,710] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:00,712] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:00,715] INFO in main: Processed order #1322
+[2026-01-25 21:24:00,717] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:05,725] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:05,728] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:05,732] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:06,003] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:06,020] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:06,023] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:06,027] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:06,030] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:06,032] INFO in main: Processed order #1322
+[2026-01-25 21:24:06,035] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:11,042] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:11,052] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:11,057] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:11,298] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:11,310] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:11,314] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:11,317] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:11,319] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:11,322] INFO in main: Processed order #1322
+[2026-01-25 21:24:11,324] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:16,332] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:16,339] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:16,342] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:16,595] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:16,610] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:16,613] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:16,616] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:16,619] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:16,621] INFO in main: Processed order #1322
+[2026-01-25 21:24:16,624] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:21,631] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:21,636] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:21,639] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:21,885] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:21,901] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:21,904] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:21,906] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:21,909] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:21,913] INFO in main: Processed order #1322
+[2026-01-25 21:24:21,915] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:26,923] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:26,930] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:26,935] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:27,183] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:27,198] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:27,201] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:27,204] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:27,207] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:27,209] INFO in main: Processed order #1322
+[2026-01-25 21:24:27,212] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:32,219] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:32,226] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:32,237] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:32,535] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:32,556] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:32,561] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:32,564] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:32,567] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:32,569] INFO in main: Processed order #1322
+[2026-01-25 21:24:32,573] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:37,583] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:37,590] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:37,593] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:37,880] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:37,895] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:37,898] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:37,901] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:37,903] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:37,906] INFO in main: Processed order #1322
+[2026-01-25 21:24:37,908] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:42,916] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:42,919] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:42,922] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:43,184] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:43,199] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:43,202] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:43,205] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:43,208] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:43,210] INFO in main: Processed order #1322
+[2026-01-25 21:24:43,213] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:48,220] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:48,228] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:48,231] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:48,443] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:48,459] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:48,462] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:48,465] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:48,468] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:48,471] INFO in main: Processed order #1322
+[2026-01-25 21:24:48,473] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:53,481] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:53,486] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:53,489] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:53,835] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:53,847] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:53,850] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:53,853] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:53,856] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:53,858] INFO in main: Processed order #1322
+[2026-01-25 21:24:53,861] INFO in main: Order processing cycle complete.
+[2026-01-25 21:24:58,868] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:24:58,875] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:24:58,878] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:24:59,270] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:24:59,284] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:24:59,287] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:24:59,290] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:24:59,294] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:24:59,296] INFO in main: Processed order #1322
+[2026-01-25 21:24:59,299] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:04,306] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:04,313] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:04,317] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:04,587] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:04,601] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:04,604] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:04,608] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:04,610] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:04,613] INFO in main: Processed order #1322
+[2026-01-25 21:25:04,615] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:09,623] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:09,630] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:09,633] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:09,881] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:09,896] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:09,899] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:09,902] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:09,904] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:09,907] INFO in main: Processed order #1322
+[2026-01-25 21:25:09,910] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:14,917] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:14,925] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:14,928] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:15,170] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:15,183] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:15,186] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:15,189] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:15,192] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:15,195] INFO in main: Processed order #1322
+[2026-01-25 21:25:15,198] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:20,206] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:20,213] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:20,217] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:20,573] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:20,589] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:20,592] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:20,594] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:20,597] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:20,600] INFO in main: Processed order #1322
+[2026-01-25 21:25:20,602] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:25,610] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:25,617] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:25,620] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:25,886] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:25,903] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:25,907] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:25,909] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:25,912] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:25,914] INFO in main: Processed order #1322
+[2026-01-25 21:25:25,917] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:30,925] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:30,932] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:30,935] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:31,194] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:31,207] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:31,210] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:31,214] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:31,216] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:31,219] INFO in main: Processed order #1322
+[2026-01-25 21:25:31,222] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:36,230] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:36,237] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:36,240] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:36,478] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:36,495] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:36,499] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:36,502] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:36,504] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:36,507] INFO in main: Processed order #1322
+[2026-01-25 21:25:36,510] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:41,517] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:41,524] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:41,527] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:41,861] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:41,878] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:41,881] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:41,884] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:41,886] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:41,889] INFO in main: Processed order #1322
+[2026-01-25 21:25:41,892] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:46,899] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:46,907] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:46,910] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:47,116] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:47,132] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:47,135] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:47,138] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:47,141] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:47,144] INFO in main: Processed order #1322
+[2026-01-25 21:25:47,147] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:52,154] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:52,159] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:52,162] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:52,596] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:52,611] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:52,615] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:52,618] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:52,620] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:52,623] INFO in main: Processed order #1322
+[2026-01-25 21:25:52,625] INFO in main: Order processing cycle complete.
+[2026-01-25 21:25:57,632] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:25:57,639] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:25:57,642] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:25:57,942] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:25:57,957] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:25:57,960] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:25:57,963] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:25:57,966] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:25:57,969] INFO in main: Processed order #1322
+[2026-01-25 21:25:57,972] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:02,979] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:02,986] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:02,989] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:03,192] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:03,207] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:03,210] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:03,213] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:03,215] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:03,218] INFO in main: Processed order #1322
+[2026-01-25 21:26:03,228] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:08,236] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:08,244] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:08,247] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:08,532] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:08,544] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:08,547] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:08,550] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:08,552] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:08,555] INFO in main: Processed order #1322
+[2026-01-25 21:26:08,558] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:13,565] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:13,572] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:13,576] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:13,795] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:13,811] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:13,814] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:13,817] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:13,819] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:13,822] INFO in main: Processed order #1322
+[2026-01-25 21:26:13,825] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:18,832] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:18,839] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:18,842] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:19,140] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:19,156] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:19,159] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:19,162] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:19,165] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:19,167] INFO in main: Processed order #1322
+[2026-01-25 21:26:19,169] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:24,177] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:24,184] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:24,187] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:24,465] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:24,481] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:24,484] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:24,486] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:24,489] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:24,491] INFO in main: Processed order #1322
+[2026-01-25 21:26:24,494] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:29,502] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:29,509] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:29,512] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:29,785] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:29,802] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:29,805] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:29,808] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:29,810] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:29,813] INFO in main: Processed order #1322
+[2026-01-25 21:26:29,816] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:34,823] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:34,831] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:34,834] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:35,077] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:35,091] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:35,094] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:35,097] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:35,100] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:35,103] INFO in main: Processed order #1322
+[2026-01-25 21:26:35,105] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:40,112] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:40,119] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:40,122] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:40,347] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:40,363] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:40,366] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:40,369] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:40,372] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:40,374] INFO in main: Processed order #1322
+[2026-01-25 21:26:40,377] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:45,384] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:45,389] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:45,392] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:45,591] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:45,607] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:45,610] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:45,613] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:45,615] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:45,618] INFO in main: Processed order #1322
+[2026-01-25 21:26:45,620] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:50,628] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:50,635] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:50,638] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:50,852] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:50,867] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:50,870] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:50,873] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:50,876] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:50,878] INFO in main: Processed order #1322
+[2026-01-25 21:26:50,881] INFO in main: Order processing cycle complete.
+[2026-01-25 21:26:55,888] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:26:55,898] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:26:55,901] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:26:56,131] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:26:56,150] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:26:56,153] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:26:56,156] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:26:56,159] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:26:56,162] INFO in main: Processed order #1322
+[2026-01-25 21:26:56,165] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:01,172] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:01,180] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:01,182] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:01,428] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:01,444] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:01,447] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:01,450] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:01,453] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:01,455] INFO in main: Processed order #1322
+[2026-01-25 21:27:01,458] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:06,466] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:06,474] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:06,477] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:06,688] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:06,703] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:06,707] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:06,710] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:06,712] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:06,715] INFO in main: Processed order #1322
+[2026-01-25 21:27:06,717] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:11,725] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:11,730] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:11,734] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:11,948] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:11,963] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:11,966] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:11,969] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:11,972] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:11,974] INFO in main: Processed order #1322
+[2026-01-25 21:27:11,977] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:16,984] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:16,991] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:16,994] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:17,300] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:17,322] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:17,325] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:17,328] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:17,331] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:17,335] INFO in main: Processed order #1322
+[2026-01-25 21:27:17,338] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:22,345] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:22,352] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:22,355] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:22,624] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:22,639] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:22,642] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:22,645] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:22,647] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:22,650] INFO in main: Processed order #1322
+[2026-01-25 21:27:22,653] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:27,660] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:27,667] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:27,671] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:27,949] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:27,965] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:27,968] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:27,971] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:27,974] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:27,976] INFO in main: Processed order #1322
+[2026-01-25 21:27:27,979] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:32,987] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:32,994] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:32,997] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:33,275] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:33,290] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:33,293] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:33,296] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:33,299] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:33,302] INFO in main: Processed order #1322
+[2026-01-25 21:27:33,304] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:38,312] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:38,319] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:38,322] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:38,662] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:38,675] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:38,678] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:38,681] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:38,684] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:38,687] INFO in main: Processed order #1322
+[2026-01-25 21:27:38,690] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:43,697] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:43,705] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:43,708] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:44,027] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:44,082] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:44,088] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:44,091] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:44,094] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:44,097] INFO in main: Processed order #1322
+[2026-01-25 21:27:44,100] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:49,107] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:49,116] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:49,120] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:49,352] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:49,366] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:49,369] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:49,372] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:49,375] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:49,377] INFO in main: Processed order #1322
+[2026-01-25 21:27:49,380] INFO in main: Order processing cycle complete.
+[2026-01-25 21:27:54,387] INFO in main: Fetching orders from Shopify in the main process...
+[2026-01-25 21:27:54,396] INFO in shopify_connector: Successfully connected to Shopify API.
+[2026-01-25 21:27:54,400] INFO in connection: GET https://bullmoosesg.myshopify.com/admin/api/2025-07/orders.json?fulfillment_status=unfulfilled&limit=10
+[2026-01-25 21:27:54,809] INFO in connection: --> 200 OK 8500b
+[2026-01-25 21:27:54,825] INFO in shopify_connector: Found 1 recent unfulfilled orders.
+[2026-01-25 21:27:54,828] INFO in main: Successfully fetched 1 orders.
+[2026-01-25 21:27:54,831] INFO in db_connector: Order with ID 6994964938979 already exists. Skipping insert.
+[2026-01-25 21:27:54,834] INFO in order_management: Order 6994964938979 already processed.
+[2026-01-25 21:27:54,836] INFO in main: Processed order #1322
+[2026-01-25 21:27:54,839] INFO in main: Order processing cycle complete.

@@ -263,3 +263,19 @@ bag:
     - {size: 25, color: "Black", name: "Main Buckle"}
   roll_goods:
     - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+
+---
+bag:
+  name: Test Bag Curl
+  inventory_policy:
+    min_stock: 10
+    batch_size: 5
+  color_order_map:
+  - Main
+  fabric_panels:
+  - name: Front
+    shop_map: Main
+    file_path: test_svg.svg
+    material_set: Fabric1
+  hardware: []
+  roll_goods: []

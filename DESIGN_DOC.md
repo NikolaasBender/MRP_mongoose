@@ -69,3 +69,15 @@ Phase 2.5: Efficiency Tools
         [x] Update cutting.html with color filter dropdown.
 
         [x] Update /cutting route to handle color param.
+
+Phase 3: Administrative Features
+
+    [x] Task 9: Add Bag Interface.
+
+        [x] Create /add_bag route and template.
+        
+        [x] Implement dynamic form for Panels, Hardware, and Roll Goods.
+
+        [x] Implement file upload for Panel SVGs.
+
+        [x] Implement YAML appending logic for persistence.

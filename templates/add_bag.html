@@ -1,0 +1,218 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Add New Bag Configuration</h1>
+        <p class="text-muted">Create a new bag definition and add it to the system.</p>
+    </div>
+</div>
+
+<form action="{{ url_for('add_bag') }}" method="POST" enctype="multipart/form-data" id="addBagForm">
+    <!-- Basic Information -->
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Basic Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="bagName" class="form-label">Bag Name</label>
+                    <input type="text" class="form-control" id="bagName" name="name" required
+                        placeholder="e.g. Basket Boss">
+                </div>
+                <!-- Inventory Policy -->
+                <div class="col-md-3">
+                    <label for="minStock" class="form-label">Min Stock</label>
+                    <input type="number" class="form-control" id="minStock" name="min_stock" value="5" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="batchSize" class="form-label">Batch Size</label>
+                    <input type="number" class="form-control" id="batchSize" name="batch_size" value="1" required>
+                </div>
+
+                <!-- Color Order Map -->
+                <div class="col-12">
+                    <label class="form-label">Color Order Mapping</label>
+                    <div class="form-text mb-2">Define the order of colors in the Slash-delimited string (e.g.
+                        "Main/Accent").</div>
+                    <div id="colorMapContainer" class="d-flex flex-wrap gap-2 mb-2">
+                        <!-- Dynamic inputs will go here -->
+                        <div class="input-group input-group-sm" style="width: 200px;">
+                            <input type="text" class="form-control" name="color_order_map[]"
+                                placeholder="e.g. Main Color" required>
+                            <button class="btn btn-outline-danger" type="button"
+                                onclick="this.parentElement.remove()">X</button>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="addColorMapField()">+ Add Map
+                        Field</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fabric Panels -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Fabric Panels</h5>
+            <button type="button" class="btn btn-sm btn-light" onclick="addPanelRow()">+ Add Panel</button>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0" id="panelsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Panel Name</th>
+                            <th>Shopify Map</th>
+                            <th>SVG File</th>
+                            <th>Material Set</th>
+                            <th width="50"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows added via JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-3 text-center text-muted" id="noPanelsMsg">No panels added yet.</div>
+        </div>
+    </div>
+
+    <!-- Roll Goods -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Roll Goods (Webbing/Zippers)</h5>
+            <button type="button" class="btn btn-sm btn-light" onclick="addWebbingRow()">+ Add Roll Good</button>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0" id="webbingTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Shopify Map</th>
+                            <th>Length (mm?)</th>
+                            <th>Material Set</th>
+                            <th>Qty</th>
+                            <th width="50"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows added via JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-3 text-center text-muted" id="noWebbingMsg">No roll goods added yet.</div>
+        </div>
+    </div>
+
+    <!-- Hardware -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Hardware</h5>
+            <button type="button" class="btn btn-sm btn-light" onclick="addHardwareRow()">+ Add Hardware</button>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-bordered mb-0" id="hardwareTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th>Color</th>
+                            <th width="50"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows added via JS -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-3 text-center text-muted" id="noHardwareMsg">No hardware added yet.</div>
+        </div>
+    </div>
+
+    <div class="d-grid gap-2 mb-5">
+        <button type="submit" class="btn btn-primary btn-lg">Create Bag Configuration</button>
+    </div>
+
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // --- Helper to Create Inputs ---
+    function createInput(name, placeholder, type = "text", required = true, value = "") {
+        return `<input type="${type}" name="${name}" class="form-control form-control-sm" placeholder="${placeholder}" ${required ? 'required' : ''} value="${value}">`;
+    }
+
+    // --- Color Map Logic ---
+    function addColorMapField() {
+        const container = document.getElementById('colorMapContainer');
+        const div = document.createElement('div');
+        div.className = 'input-group input-group-sm';
+        div.style.width = '200px';
+        div.innerHTML = `
+            <input type="text" class="form-control" name="color_order_map[]" placeholder="Map Key" required>
+            <button class="btn btn-outline-danger" type="button" onclick="this.parentElement.remove()">X</button>
+        `;
+        container.appendChild(div);
+    }
+
+    // --- Panel Logic ---
+    function addPanelRow() {
+        document.getElementById('noPanelsMsg').style.display = 'none';
+        const tbody = document.querySelector('#panelsTable tbody');
+        const row = tbody.insertRow();
+        const idx = tbody.rows.length; // 1-based, strictly acting as unique suffix valid for this submission
+
+        // We use array naming convention: panels[idx][field]
+        // But simple arrays are easier: panels_name[], panels_map[], etc. 
+        // Let's use simpler arrays for parsing ease in Flask unless we need deep nesting binding.
+        // Actually, grouping by row index is safer. Let's send list of dicts.
+        // Flask request.form.getlist works well with simple names.
+
+        row.innerHTML = `
+            <td>${createInput('panel_name[]', 'Name')}</td>
+            <td>${createInput('panel_shop_map[]', 'Shopify Property Key')}</td>
+            <td><input type="file" name="panel_file[]" class="form-control form-control-sm" accept=".svg"></td>
+            <td>${createInput('panel_material[]', 'Default Fabric')}</td>
+            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">X</button></td>
+        `;
+    }
+
+    // --- Webbing Logic ---
+    function addWebbingRow() {
+        document.getElementById('noWebbingMsg').style.display = 'none';
+        const tbody = document.querySelector('#webbingTable tbody');
+        const row = tbody.insertRow();
+
+        row.innerHTML = `
+            <td>${createInput('webbing_name[]', 'Name')}</td>
+            <td>${createInput('webbing_shop_map[]', 'Shop Map')}</td>
+            <td>${createInput('webbing_len[]', '100', 'number')}</td>
+            <td>${createInput('webbing_material[]', 'Material Set')}</td>
+            <td>${createInput('webbing_qty[]', '1', 'number')}</td>
+            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">X</button></td>
+        `;
+    }
+
+    // --- Hardware Logic ---
+    function addHardwareRow() {
+        document.getElementById('noHardwareMsg').style.display = 'none';
+        const tbody = document.querySelector('#hardwareTable tbody');
+        const row = tbody.insertRow();
+
+        row.innerHTML = `
+            <td>${createInput('hw_name[]', 'Name')}</td>
+            <td>${createInput('hw_size[]', 'Size', 'number')}</td>
+            <td>${createInput('hw_color[]', 'Color (e.g. Black)')}</td>
+            <td><button type="button" class="btn btn-sm btn-danger" onclick="this.closest('tr').remove()">X</button></td>
+        `;
+    }
+
+    // Initialize with one row each? No, let user choose.
+</script>
+{% endblock %}

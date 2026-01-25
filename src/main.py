@@ -13,6 +13,9 @@ import multiprocessing
 import time
 from logger import setup_logger
 
+from werkzeug.utils import secure_filename
+import yaml
+
 # --- WEB SERVER IMPORTS ---
 from flask import Flask, render_template, redirect, url_for, request
 import pandas as pd
@@ -30,6 +33,7 @@ API_VERSION = os.getenv("SHOPIFY_API_VERSION")
 API_KEY = os.getenv("SHOPIFY_API_KEY")
 ACCESS_TOKEN = os.getenv("SHOPIFY_ACCESS_TOKEN")
 QUERY_INTERVAL = float(os.getenv("QUERY_INTERVAL", "3"))  # Default to 3 seconds if not set
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'assets')
 
 # Initialize global/shared resources
 # NOTE: In a multiprocessing environment, this global state is copied.
@@ -59,13 +63,113 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 template_dir = os.path.join(base_dir, '..', 'templates')
 
 # Initialize the Flask app outside the function
-app = Flask(__name__, template_folder=template_dir)
+app = Flask(__name__, template_folder=template_dir, static_folder='static')
 
 # NOTE: The database connection and logic remain the same, 
 # relying on the globally defined 'database' object (or the file 'inventory.db').
 @app.route('/')
 def index():
     return redirect(url_for('cutting'))
+
+@app.route('/add_bag', methods=['GET', 'POST'])
+def add_bag():
+    if request.method == 'GET':
+        return render_template('add_bag.html')
+    
+    if request.method == 'POST':
+        try:
+            f = request.form
+            
+            # 1. Parse Basic Info
+            bag_data = {
+                'name': f.get('name'),
+                'inventory_policy': {
+                    'min_stock': int(f.get('min_stock', 5)),
+                    'batch_size': int(f.get('batch_size', 1))
+                },
+                'color_order_map': f.getlist('color_order_map[]'),
+                'fabric_panels': [],
+                'hardware': [],
+                'roll_goods': []
+            }
+            
+            # 2. Parse Panels & Upload Files
+            panel_names = f.getlist('panel_name[]')
+            panel_maps = f.getlist('panel_shop_map[]')
+            panel_materials = f.getlist('panel_material[]')
+            panel_files = request.files.getlist('panel_file[]')
+            
+            # Ensure assets directory exists
+            if not os.path.exists(ASSETS_DIR):
+                os.makedirs(ASSETS_DIR)
+
+            for i, name in enumerate(panel_names):
+                if not name: continue # Skip empty rows
+                
+                filename = "placeholder.svg"
+                if i < len(panel_files) and panel_files[i].filename:
+                    file = panel_files[i]
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(ASSETS_DIR, filename))
+                
+                bag_data['fabric_panels'].append({
+                    'name': name,
+                    'shop_map': panel_maps[i] if i < len(panel_maps) else "",
+                    'file_path': filename,
+                    'material_set': panel_materials[i] if i < len(panel_materials) else "Default Fabric"
+                })
+
+            # 3. Parse Hardware
+            hw_names = f.getlist('hw_name[]')
+            hw_sizes = f.getlist('hw_size[]')
+            hw_colors = f.getlist('hw_color[]')
+            
+            for i, name in enumerate(hw_names):
+                if not name: continue
+                bag_data['hardware'].append({
+                    'name': name,
+                    'size': int(hw_sizes[i]) if i < len(hw_sizes) and hw_sizes[i] else 0,
+                    'color': hw_colors[i] if i < len(hw_colors) else "Silver"
+                })
+
+            # 4. Parse Roll Goods
+            rg_names = f.getlist('webbing_name[]')
+            rg_maps = f.getlist('webbing_shop_map[]')
+            rg_lens = f.getlist('webbing_len[]')
+            rg_mats = f.getlist('webbing_material[]')
+            rg_qtys = f.getlist('webbing_qty[]')
+            
+            for i, name in enumerate(rg_names):
+                if not name: continue
+                bag_data['roll_goods'].append({
+                    'name': name,
+                    'shop_map': rg_maps[i] if i < len(rg_maps) else "",
+                    'len': int(rg_lens[i]) if i < len(rg_lens) and rg_lens[i] else 0,
+                    'material_set': rg_mats[i] if i < len(rg_mats) else "Default",
+                    'quantity': int(rg_qtys[i]) if i < len(rg_qtys) and rg_qtys[i] else 1
+                })
+
+            # 5. Append to YAML
+            # We wrap it in a 'bag' key as per existing schema
+            full_doc = {'bag': bag_data}
+            
+            with open('src/bags_configs.yaml', 'a') as f:
+                f.write('\n---\n')
+                yaml.dump(full_doc, f, sort_keys=False)
+                
+            logger.info(f"Successfully added new bag: {bag_data['name']}")
+            
+            # Reload bags in memory (for this process only)
+            global bags
+            bags = Bag.from_yaml('src/bags_configs.yaml')
+            # Update order_manager's reference
+            order_manager.bags = bags
+            
+            return redirect(url_for('cutting'))
+
+        except Exception as e:
+            logger.error(f"Error adding bag: {e}")
+            return f"Error adding bag: {str(e)}", 500
 
 @app.route('/cutting')
 def cutting():
