@@ -21,4 +21,4 @@ dist/
 
 # SQLite database files
 *.db
-*.sqlite3
+*.sqlite3app.log
