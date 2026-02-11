@@ -21,6 +21,8 @@ from flask import Flask, render_template, redirect, url_for, request
 import pandas as pd
 # --------------------------
 
+from config_loader import load_config, save_config
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -28,11 +30,13 @@ load_dotenv()
 logger = setup_logger()
 
 # --- IMPORTANT SETUP ---
-SHOP_URL = os.getenv("SHOPIFY_SHOP_URL")
-API_VERSION = os.getenv("SHOPIFY_API_VERSION")
-API_KEY = os.getenv("SHOPIFY_API_KEY")
-ACCESS_TOKEN = os.getenv("SHOPIFY_ACCESS_TOKEN")
-QUERY_INTERVAL = float(os.getenv("QUERY_INTERVAL", "3"))  # Default to 3 seconds if not set
+# Initial load
+initial_config = load_config()
+SHOP_URL = initial_config.get("SHOPIFY_SHOP_URL")
+API_VERSION = initial_config.get("SHOPIFY_API_VERSION")
+API_KEY = initial_config.get("SHOPIFY_API_KEY")
+ACCESS_TOKEN = initial_config.get("SHOPIFY_ACCESS_TOKEN")
+QUERY_INTERVAL = float(initial_config.get("QUERY_INTERVAL", "3"))  # Default to 3 seconds if not set
 ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'assets')
 
 # Initialize global/shared resources
@@ -232,6 +236,31 @@ def view_orders():
     orders = database.get_all_orders(limit=50) # Limit to 50 for now
     return render_template('orders.html', orders=orders)
 
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    if request.method == 'POST':
+        # Save config
+        new_config = {
+            "SHOPIFY_SHOP_URL": request.form.get("shop_url"),
+            "SHOPIFY_API_VERSION": request.form.get("api_version"),
+            "SHOPIFY_API_KEY": request.form.get("api_key"),
+            "SHOPIFY_ACCESS_TOKEN": request.form.get("access_token"),
+            "QUERY_INTERVAL": request.form.get("query_interval", "3")
+        }
+        if save_config(new_config):
+            logger.info("Configuration updated successfully.")
+        else:
+            logger.error("Failed to update configuration.")
+        return redirect(url_for('settings'))
+    
+    # Load current config for display
+    config = load_config()
+    return render_template('settings.html', config=config)
+
+@app.route('/help')
+def help_page():
+    return render_template('help.html')
+
 
 def run_flask_server():
     """
@@ -250,8 +279,16 @@ def run_order_processing():
         # 2. CONTINUE WITH ORDER PROCESSING IN THE MAIN PROCESS
         logger.info("Fetching orders from Shopify in the main process...")
         
+        # Reload config to get latest values
+        config = load_config()
+        shop_url = config.get("SHOPIFY_SHOP_URL")
+        api_version = config.get("SHOPIFY_API_VERSION")
+        access_token = config.get("SHOPIFY_ACCESS_TOKEN")
+        api_key = config.get("SHOPIFY_API_KEY")
+        query_interval = float(config.get("QUERY_INTERVAL", "3"))
+
         # connect to shopify and get orders
-        orders = get_shopify_orders(SHOP_URL, API_VERSION, ACCESS_TOKEN, API_KEY)
+        orders = get_shopify_orders(shop_url, api_version, access_token, api_key)
         
         if orders:
             logger.info(f"Successfully fetched {len(orders)} orders.")
@@ -272,7 +309,7 @@ def run_order_processing():
         else:
             logger.info("No orders fetched or an error occurred during connection.")
 
-        time.sleep(QUERY_INTERVAL)  # Wait before fetching orders again
+        time.sleep(query_interval)  # Wait before fetching orders again
 
 # =========================================================================
 # MAIN EXECUTION

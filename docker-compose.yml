@@ -6,6 +6,7 @@ services:
       context: .
     volumes:
       - .:/app
+      - ~/.config/mrp_mongoose:/home/vscode/.config/mrp_mongoose
     working_dir: /app
     env_file:
       - .env

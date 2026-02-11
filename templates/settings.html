@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h2>System Settings</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('settings') }}">
+                    <div class="mb-3">
+                        <label for="shop_url" class="form-label">Shopify Shop URL</label>
+                        <input type="text" class="form-control" id="shop_url" name="shop_url"
+                            value="{{ config.SHOPIFY_SHOP_URL }}" placeholder="your-shop.myshopify.com">
+                        <div class="form-text">The base URL of your Shopify store.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="api_version" class="form-label">API Version</label>
+                        <input type="text" class="form-control" id="api_version" name="api_version"
+                            value="{{ config.SHOPIFY_API_VERSION }}" placeholder="2023-01">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="api_key" class="form-label">API Key</label>
+                        <input type="password" class="form-control" id="api_key" name="api_key"
+                            value="{{ config.SHOPIFY_API_KEY }}">
+                        <div class="form-text">Your Shopify Admin API Key.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="access_token" class="form-label">Access Token</label>
+                        <input type="password" class="form-control" id="access_token" name="access_token"
+                            value="{{ config.SHOPIFY_ACCESS_TOKEN }}">
+                        <div class="form-text">The Admin API Access Token.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="query_interval" class="form-label">Query Interval (Seconds)</label>
+                        <input type="number" step="0.1" class="form-control" id="query_interval" name="query_interval"
+                            value="{{ config.QUERY_INTERVAL }}">
+                        <div class="form-text">How often to check for new orders.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                    <a href="{{ url_for('index') }}" class="btn btn-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
