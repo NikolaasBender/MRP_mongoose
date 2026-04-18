@@ -1,0 +1,4 @@
+ShopifyAPI
+dotenv
+flask
+pandas
