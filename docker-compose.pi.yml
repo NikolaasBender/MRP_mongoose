@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  app:
+    image: ghcr.io/nikolaasbender/mrp_mongoose:latest
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - app_data:/app/data
+      - ~/.config/mrp_mongoose:/home/appuser/.config/mrp_mongoose
+    env_file:
+      - .env
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.docker/config.json:/config.json:ro
+    command: --interval 300 --cleanup
+    environment:
+      - WATCHTOWER_LABEL_ENABLE=true
+
+volumes:
+  app_data:
