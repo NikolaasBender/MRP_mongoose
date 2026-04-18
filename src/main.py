@@ -212,6 +212,12 @@ def mark_sewn(job_id):
         database.add_finished_goods(job['sku'], 1, location="Production")
     return redirect(url_for('sewing'))
 
+@app.route('/api/mark_cut_item/<int:item_id>', methods=['POST'])
+def mark_cut_item(item_id):
+    database.update_cut_item_status(item_id, 'done')
+    color = request.form.get('color', 'ALL')
+    return redirect(url_for('cutting', color=color))
+
 @app.route('/logs')
 def view_logs():
     """
@@ -269,7 +275,7 @@ def run_flask_server():
     logger.info("Starting Flask web server in a separate process...")
     # NOTE: Set use_reloader=False when running in a multi-process environment 
     # to prevent the reloader from accidentally starting new processes.
-    app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False)
+    app.run(debug=False, host='0.0.0.0', port=5000, use_reloader=False)
 
 def run_order_processing():
     """

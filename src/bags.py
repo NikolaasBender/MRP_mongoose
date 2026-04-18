@@ -47,7 +47,7 @@ class Bag:
         return [panel.file_path for panel in self.fabric_panels]
     
     def get_panel_by_shop_map(self, shop_map: str) -> Panel:
-        for panel in self.panels:
+        for panel in self.fabric_panels:
             if panel.shop_map == shop_map:
                 return panel
         raise ValueError(f"No panel found for shop map: {shop_map}")
@@ -122,6 +122,15 @@ class Bag:
         
         return mapped_colors
 
+    def _resolve_property(self, properties: dict, key: str, default: str) -> str:
+        """Look up a property key with fuzzy fallback (startswith match)."""
+        if key in properties:
+            return properties[key]
+        for prop_name, prop_value in properties.items():
+            if prop_name.startswith(key):
+                return prop_value
+        return default
+
     def generate_cut_list(self, order: dict) -> List[cutLineItem]:
         """
         Generate a cut list based on the bag configuration and order details.
@@ -144,12 +153,20 @@ class Bag:
             if isinstance(properties_raw, list):
                 properties = {prop['name']: prop['value'] for prop in properties_raw}
             else:
-                properties = properties_raw            
+                properties = properties_raw
             quantity = item.get('quantity', 1)
-            
+
+            # If Color Set is a slash-delimited preset, explode into individual properties
+            color_set = properties.get('Color Set', properties.get('Color', ''))
+            if '/' in str(color_set) and self.color_order_map:
+                exploded = self.explode_standard_colors(color_set)
+                for key, value in exploded.items():
+                    if key not in properties:
+                        properties[key] = value
+
             # Process fabric panels
             for panel in self.fabric_panels:
-                color = properties.get(panel.shop_map, 'Default Color')
+                color = self._resolve_property(properties, panel.shop_map, 'Default Color')
                 cut_list.append(cutLineItem(
                     panel_name=panel.name,
                     file_path=panel.file_path,
@@ -159,7 +176,7 @@ class Bag:
             # Process webbings / roll goods
             for webbing in self.roll_goods:
                 # Try to get color from properties using shop_map, fallback to material_set
-                color = properties.get(webbing.shop_map, webbing.material_set)
+                color = self._resolve_property(properties, webbing.shop_map, webbing.material_set)
                 
                 total_qty = quantity * webbing.quantity
                 
@@ -174,7 +191,7 @@ class Bag:
             
             # Process hardware
             for hw in self.hardware:
-                color = properties.get('Hardware Color', hw.color)
+                color = self._resolve_property(properties, 'Hardware Color', hw.color)
                 for _ in range(quantity):
                     cut_list.append(cutLineItem(
                         panel_name=hw.name,

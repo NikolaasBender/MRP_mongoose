@@ -18,8 +18,8 @@ bag:
   color_order_map: ["Main Color", "Accent 1", "Accent 2", "Interior"]
   fabric_panels:
     - {name: "Back Panel", shop_map: "Main Color", file_path: "back_panel.svg", material_set: "Default Fabric"}
-    - {name: "Side Panel", shop_map: "Accent 1", file_path: "side_panel.svg", material_set: "Default Fabric"}
-    - {name: "Top Panel", shop_map: "Accent 2", file_path: "top_panel.svg", material_set: "Default Fabric"}
+    - {name: "Side Panel", shop_map: "Accent 1 (optional)", file_path: "side_panel.svg", material_set: "Default Fabric"}
+    - {name: "Top Panel", shop_map: "Accent 2 (optional)", file_path: "top_panel.svg", material_set: "Default Fabric"}
     - {name: "Interior", shop_map: "Interior", file_path: "interior.svg", material_set: "Default Fabric"}
   hardware:
     - {size: 4, color: "Black", name: "Front Buckle"}

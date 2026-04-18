@@ -62,7 +62,9 @@ class MRPDatabase:
         """Helper to create a fresh connection."""
         # Check Same Thread must be False when using multiprocessing
         # This is a key safety measure for reading data across processes/threads
-        return sqlite3.connect(self.db_name, check_same_thread=False)
+        conn = sqlite3.connect(self.db_name, check_same_thread=False)
+        conn.execute("PRAGMA journal_mode=WAL;")
+        return conn
         
     def create_colors_table(self):
         """Creates a lookup table for colors"""
@@ -348,6 +350,15 @@ class MRPDatabase:
             cursor.execute(sql)
             rows = cursor.fetchall()
             return [row[0] for row in rows]
+
+    def update_cut_item_status(self, cut_id: int, status: str):
+        """Update status of a single cut_list item."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            sql = "UPDATE cut_list SET status = ? WHERE id = ?"
+            cursor.execute(sql, (status, cut_id))
+            conn.commit()
+            logger.info(f"Cut item {cut_id} status updated to '{status}'.")
 
     def create_orders_table(self):
         """Creates the 'orders' table if it does not exist."""

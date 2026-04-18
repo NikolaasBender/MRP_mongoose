@@ -51,7 +51,7 @@ class OrderManager:
             bag_data = self.get_bag_data_by_name(title)
             
             if not bag_data:
-                logger.info(f"Skipping item '{title}' (not a configured bag).")
+                logger.warning(f"Skipping item '{title}' — no matching bag in configs. Check bags_configs.yaml.")
                 continue
 
             # properties is already a dict from shopify_connector

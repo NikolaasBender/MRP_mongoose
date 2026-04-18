@@ -44,13 +44,10 @@
                         <span class="badge bg-warning text-dark fs-6">{{ item.quantity }}</span>
                     </td>
                     <td>
-                        <!-- TODO: Implement granular "Mark Done" for panels. 
-                             For now, we don't have a specific route for marking single cut items done 
-                             in the implementation plan, so we might need to add one or reuse/stub it. 
-                             The backend update mentioned 'add_cut_item' but not 'mark_cut_item_done'.
-                             Let's assume we'll add /api/mark_cut_item/<id> logic next.
-                        -->
-                        <button class="btn btn-sm btn-success" disabled>Done</button>
+                        <form method="post" action="{{ url_for('mark_cut_item', item_id=item.id) }}" style="display:inline;">
+                            <input type="hidden" name="color" value="{{ selected_color }}">
+                            <button type="submit" class="btn btn-sm btn-success">Done</button>
+                        </form>
                     </td>
                 </tr>
                 {% else %}
