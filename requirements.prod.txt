@@ -1,4 +1,5 @@
 ShopifyAPI
 dotenv
 flask
+numpy<2          # numpy 2.x has no prebuilt armv7 wheels; 1.26.x does
 pandas
