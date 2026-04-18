@@ -4,15 +4,18 @@
     "dockerfile": "../Dockerfile"
   },
   "remoteUser": "vscode",
+  "updateRemoteUserUID": true, // Ensure this is explicitly true
   "settings": {
     "python.linting.pylintEnabled": true,
     "python.formatting.autopep8Enabled": true
   },
   "extensions": [
     "ms-python.python",
-    "ms-python.vscode-pylance"
+    "ms-python.vscode-pylance",
   ],
-  "forwardPorts": [80],
+  "runArgs": [
+    "--network=host"
+  ],
   "postCreateCommand": "pip install -r requirements.txt",
   "shutdownAction": "removeContainer"
 }

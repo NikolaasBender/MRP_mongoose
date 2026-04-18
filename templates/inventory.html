@@ -1,0 +1,31 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1>Inventory</h1>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>SKU</th>
+                    <th>Quantity On Hand</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in goods %}
+                <tr>
+                    <td>{{ item.sku }}</td>
+                    <td class="fw-bold {{ 'text-danger' if item.quantity < 5 else 'text-success' }}">{{ item.quantity }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="2" class="text-center">No inventory found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

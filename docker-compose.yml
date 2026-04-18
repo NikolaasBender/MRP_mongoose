@@ -4,9 +4,12 @@ services:
   python_app:
     build:
       context: .
+    ports:
+      - "5000:5000"
     volumes:
       - .:/app
+      - ~/.config/mrp_mongoose:/home/vscode/.config/mrp_mongoose
     working_dir: /app
     env_file:
       - .env
-    command: /usr/local/bin/python main.py
+    command: /usr/local/bin/python src/main.py

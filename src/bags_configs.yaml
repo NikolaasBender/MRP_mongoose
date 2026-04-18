@@ -1,0 +1,281 @@
+---
+bag:
+  name: "Basket Boss"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main Color", "Accent 1"]
+  fabric_panels:
+    - {name: "Front Panel", shop_map: "Main Color", file_path: "front_panel.svg", material_set: "Default Fabric"}
+    - {name: "Bottom Panel", shop_map: "Accent 1", file_path: "bottom_panel.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 3, color: "Silver", name: "Side Buckle"}
+  roll_goods:
+    - {name: "shoulder Strap", shop_map: "shoulder", len: 100, material_set: "20 Black"}
+    - {name: "main Zipper Pull", shop_map: "main", len: 30, material_set: "5 Black"}
+---
+bag:
+  name: "B.O.F.P"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main Color", "Accent 1", "Accent 2", "Interior"]
+  fabric_panels:
+    - {name: "Back Panel", shop_map: "Main Color", file_path: "back_panel.svg", material_set: "Default Fabric"}
+    - {name: "Side Panel", shop_map: "Accent 1 (optional)", file_path: "side_panel.svg", material_set: "Default Fabric"}
+    - {name: "Top Panel", shop_map: "Accent 2 (optional)", file_path: "top_panel.svg", material_set: "Default Fabric"}
+    - {name: "Interior", shop_map: "Interior", file_path: "interior.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 4, color: "Black", name: "Front Buckle"}
+  roll_goods:
+    - {name: "Adjustable Strap", shop_map: "Adjustable Strap", len: 120, material_set: "Navy 25mm"}
+    - {name: "main Zipper Pull", shop_map: "main", len: 40, material_set: "7 navy"}
+    - {name: "laptop Zipper Pull", shop_map: "laptop", len: 25, material_set: "5 Para"}
+---
+bag:
+  name: "Sling Thing"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Left", "Right", "Top"]
+  fabric_panels:
+    - {name: "Left Panel", shop_map: "Left", file_path: "Sling_Thing_Left_B.svg", fabric_usage: "Lam_all" , material_set: "Default Fabric"}
+    - {name: "Right Panel", shop_map: "Right", file_path: "Sling_Thing_Right_C.svg", fabric_usage: "Lam_heavy", material_set: "Default Fabric"}
+    - {name: "Top Panel", shop_map: "Top", file_path: "Sling_Thing_Top_D.svg", fabric_usage: "Lam_heavy", material_set: "Default Fabric"}
+---
+bag:
+  name: "Triange Sling"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Left", "Center", "Right", "Top"]
+  fabric_panels:
+    - {name: "Left Panel", shop_map: "Left", file_path: "TRIANGLE_LEFT_B.svg", fabric_usage: Lam_heavy, material_set: "Default Fabric"}
+    - {name: "Center Panel", shop_map: "Center", file_path: "TRIANGLE_CENTER_C.svg", fabric_usage: Lam_all, material_set: "Default Fabric"}
+    - {name: "Right Panel", shop_map: "Right", file_path: "TRIANGLE_RIGHT_D.svg", fabric_usage: Lam_all, material_set: "Default Fabric"}
+    - {name: "Top Panel", shop_map: "Top", file_path: "TRIANGLE_TOP_E.svg", fabric_usage: Lam_all, material_set: "Default Fabric"}
+  roll_goods:
+    - {material_set: "550 Para", len: 1346, name: "Main Strap", shop_map: "Main Strap"}
+---
+bag:
+  name: "City Slicker"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Outer", "Liner", "Zipper Accent"]
+  fabric_panels: 
+    - {name: "Main Outer", shop_map: "Outer", file_path: "", material_set: "Lam_heavy" }
+    - {name: "Zip Outer", shop_map: "Outer", file_path: "", material_set: "Lam_heavy" }
+    - {name: "Gussett Outer", shop_map: "Outer", file_path: "", material_set: "Lam_heavy" }
+    - {name: "Main Liner", shop_map: "Liner", file_path: "", material_set: "Liner" }
+    - {name: "Zip Liner", shop_map: "Liner", file_path: "", material_set: "Liner" }
+    - {name: "Gussett Liner", shop_map: "Liner", file_path: "", material_set: "Liner" }
+    - {name: "Zip Sides", shop_map: "Zipper Accent", file_path: "", material_set: "Lam_all" }
+  roll_goods:
+    - {name: "U-Lock Web", shop_map: "Lock Strap", len: 286, material_set: "1.5 web"}
+    - {name: "U-Lock cord", shop_map: "Lock Cord", len: 286, material_set: "330 Cord"}
+    - {name: "Zipper Pull", shop_map: "Zipper Pull", len: 286, material_set: "550 Para"}
+---
+bag:
+  name: "B.F.P. City"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Zipper Cord Top", shop_map: "Zipper Cord Top", quantity: 1, len: 230, web_attribute_id: "20", material_set: "550 paracord"}
+    - {name: "Zipper Cord Front", shop_map: "Zipper Cord Front", quantity: 1, len: 230, web_attribute_id: "20", material_set: "550 paracord"}
+    - {name: "Front Zipper", shop_map: "Front Zipper", quantity: 1, len: 312, material_id: "17", material_set: "#5 WP Matte"}
+    - {name: "Top Zipper", shop_map: "Top Zipper", quantity: 1, len: 330, material_id: "17", material_set: "#5 WP Matte"}
+    - {name: "Strap", shop_map: "Strap", quantity: 2, len: 610, material_id: "8", material_set: "1 1/2\" Nylike"}
+    - {name: "Binding", shop_map: "Binding", quantity: 2, len: 775, material_id: "79", material_set: "1\" SF Grosgrain"}
+    - {name: "Cargo Tab", shop_map: "Cargo Tab", quantity: 4, len: 50, material_id: "72", material_set: "1/2\" Mil Nylon"}
+    - {name: "Cargo Cord", shop_map: "Cargo Cord", quantity: 1, len: 685, material_id: "103", material_set: "1/8\" Shock Cord"}
+    - {name: "Bottom Tab", shop_map: "Bottom Tab", quantity: 1, len: 65, material_id: "73", material_set: "3/4\" Mil Nylon"}
+    - {name: "Cargo Bottom Tab", shop_map: "Cargo Bottom Tab", quantity: 1, len: 65, material_id: "73", material_set: "3/4\" Mil Nylon"}
+    - {name: "Zip Tab", shop_map: "Zip Tab", quantity: 2, len: 55, material_id: "76", material_set: "3/4\" SF Grosgrain"}
+    - {name: "Mitten Hook Holder", shop_map: "Mitten Hook Holder", quantity: 1, len: 50, material_set: "1/2\" Grosgrain"}
+---
+bag:
+  name: "Mini Sling"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Musette"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Stabilizer Top"]
+  fabric_panels:
+    - {name: "Stabilizer Top", shop_map: "Stabilizer Top", file_path: "placeholder.svg", material_set: "1/2in mil Nylon"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "B.F.P. - MTB"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "L.T.F.P"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Cafe Cruiser"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Bar Crawler"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Hydration Station"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Slicker Bag"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Slicker Pad"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "U-Lock Pocket"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Day Tripper"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Weekender SM"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Weekender MD"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Weekender LG"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Basket Boss 137"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+---
+bag:
+  name: "Basket Boss 139"
+  inventory_policy: {min_stock: 5, batch_size: 1}
+  color_order_map: ["Main"]
+  fabric_panels:
+    - {name: "Main Panel", shop_map: "Main", file_path: "placeholder.svg", material_set: "Default Fabric"}
+  hardware:
+    - {size: 25, color: "Black", name: "Main Buckle"}
+  roll_goods:
+    - {name: "Main Strap", shop_map: "Strap", len: 100, material_set: "Webbing"}
+
+---
+bag:
+  name: Test Bag Curl
+  inventory_policy:
+    min_stock: 10
+    batch_size: 5
+  color_order_map:
+  - Main
+  fabric_panels:
+  - name: Front
+    shop_map: Main
+    file_path: test_svg.svg
+    material_set: Fabric1
+  hardware: []
+  roll_goods: []

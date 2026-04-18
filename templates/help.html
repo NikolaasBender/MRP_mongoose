@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-header">
+                <h2>Help & Documentation</h2>
+            </div>
+            <div class="card-body">
+                <h3>Docker Compose Configuration</h3>
+                <p>
+                    If you are deploying this application using Docker Compose, you can persist your configuration
+                    by mounting the config directory. This ensures your API keys survive container restarts.
+                </p>
+                <p>
+                    Here is a working example of a <code>docker-compose.yml</code> file:
+                </p>
+                <pre><code class="language-yaml">
+version: '3.8'
+
+services:
+  python_app:
+    build:
+      context: .
+    volumes:
+      - .:/app
+      # Mount the config directory from your host user to the container user
+      # Adjust /home/user/.config/mrp_mongoose to match your local path
+      - ~/.config/mrp_mongoose:/home/vscode/.config/mrp_mongoose
+    working_dir: /app
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    command: /usr/local/bin/python src/main.py
+                </code></pre>
+
+                <div class="alert alert-info">
+                    <strong>Note:</strong>
+                    The application prioritizes Environment Variables (from <code>.env</code> key) over the
+                    configuration file.
+                    If you set keys in the Settings page but they don't seem to work, check if you have overrides in
+                    your <code>.env</code> file.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
