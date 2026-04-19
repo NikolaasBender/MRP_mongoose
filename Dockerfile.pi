@@ -2,15 +2,13 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# gcc needed to compile numpy/pandas from source on arm/v7
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    gcc \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy prod-only requirements (no test deps) to avoid pulling pytest etc.
 COPY requirements.prod.txt .
-RUN pip install --no-cache-dir --extra-index-url https://www.piwheels.org/simple -r requirements.prod.txt
+RUN pip install --no-cache-dir -r requirements.prod.txt
 
 # Copy application code
 COPY src/ src/
